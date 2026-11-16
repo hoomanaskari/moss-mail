@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -27,8 +27,10 @@ it("ignores credential temporary files and mailbox process locks", () => {
 });
 
 it("uses reserved example domains in every model-evaluation mailbox", () => {
-  const files = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard", "-z"], { encoding: "utf8" }).split("\0").filter((path) => /(?:^|\/)tests\/real[^/]*\.rs$/.test(path));
-  expect(files.length).toBeGreaterThan(0);
+  // Read from the folders, not from git: a release is checked in a copy that is not a git repository.
+  const folders = ["src-tauri/tests", ...readdirSync("crates").map((crate) => join("crates", crate, "tests"))].filter((folder) => existsSync(folder));
+  const files = folders.flatMap((folder) => readdirSync(folder).filter((name) => /^real[^/]*\.rs$/.test(name)).map((name) => join(folder, name)));
+  expect(files.length).toBeGreaterThanOrEqual(10);
   const unsafe = files.filter((path) => {
     const source = readFileSync(path, "utf8");
     const domains = [...source.matchAll(/\b[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]{2,})\b/g)].map((match) => match[1]);
