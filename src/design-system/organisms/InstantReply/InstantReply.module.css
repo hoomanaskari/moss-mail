@@ -1,0 +1,82 @@
+.box {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  outline: 1px solid var(--ai-line);
+  outline-offset: -0.5px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.title {
+  color: var(--ai);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.note {
+  flex: 1 1 0;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.options {
+  display: flex;
+  gap: 8px;
+}
+
+/* Quiet, like Discard on a summary. */
+.discard {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.discard:hover {
+  background: var(--raise);
+}
+
+
+.draft {
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  background: none;
+  outline: none;
+  resize: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 17px;
+  letter-spacing: 0.2px;
+  line-height: 27px;
+  caret-color: var(--ai);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.spacer {
+  flex: 1 1 0;
+}

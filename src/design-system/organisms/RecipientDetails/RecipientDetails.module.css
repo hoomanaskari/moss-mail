@@ -1,0 +1,68 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 6px 8px 8px;
+  border-radius: 12px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 6px;
+}
+
+.title {
+  flex: 1 1 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.group {
+  display: flex;
+  gap: 4px;
+  padding: 6px 0;
+}
+
+.label {
+  flex-shrink: 0;
+  width: 76px;
+  padding: 8px 8px 0 10px;
+  color: var(--ink-3);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.people {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px;
+}
+
+.sentText {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.zone {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.note {
+  padding: 4px 10px;
+}

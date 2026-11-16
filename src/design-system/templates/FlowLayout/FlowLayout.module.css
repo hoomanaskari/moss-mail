@@ -1,0 +1,17 @@
+.column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  padding: 44px max(24px, calc((100% - 840px) / 2)) 28px;
+  overflow-y: auto;
+}
+
+.column > * {
+  flex-shrink: 0;
+}
+
+.tight {
+  padding-top: 36px;
+  padding-bottom: 24px;
+}

@@ -1,0 +1,41 @@
+.steps {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.label {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.done .label {
+  color: var(--ink-2);
+}
+
+.now .dot {
+  background: var(--ai);
+}
+
+.now .label {
+  color: var(--ink);
+  font-weight: 700;
+}

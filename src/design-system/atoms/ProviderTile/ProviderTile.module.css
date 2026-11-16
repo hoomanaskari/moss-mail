@@ -1,0 +1,27 @@
+.tile {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  background: var(--raise);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.s36 {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  font-size: 16px;
+}
+
+.s24 {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.raised {
+  background: var(--surface);
+}

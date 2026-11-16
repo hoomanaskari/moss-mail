@@ -1,0 +1,6 @@
+.dialog { width: min(560px, calc(100vw - 48px)); max-height: calc(100vh - 48px); overflow: auto; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); }
+.dialog::backdrop { background: rgb(0 0 0 / 50%); }
+.dialog h2 { margin-top: 0; }
+.dialog li { margin-block: 12px; }
+.dialog li p { margin-block: 4px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }

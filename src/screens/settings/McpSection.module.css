@@ -1,0 +1,115 @@
+.row {
+  gap: 14px;
+  min-height: 56px;
+}
+
+.tile {
+  display: flex;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--raise);
+}
+
+.wrap {
+  white-space: normal;
+}
+
+.connect {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px 14px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.where {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.snippet {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 8px;
+  background: var(--raise);
+}
+
+.code {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 12px;
+  border-radius: 8px;
+  background: var(--raise);
+}
+
+.field dt {
+  flex: 0 0 48px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.used {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  opacity: 0.5;
+}
+
+.live .dot {
+  background: var(--ai);
+  opacity: 1;
+}
+
+.problem {
+  color: var(--due);
+  white-space: normal;
+}

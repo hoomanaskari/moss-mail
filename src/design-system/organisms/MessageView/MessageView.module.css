@@ -1,0 +1,93 @@
+.message {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  user-select: text;
+  cursor: auto;
+}
+
+.sender {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.name {
+  color: var(--ink);
+  font-size: calc(16px * var(--reading-scale));
+  font-weight: 700;
+}
+
+/* The hover background reaches past the name without moving it off the column edge. */
+.nameButton {
+  margin: -2px -6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.nameButton:hover {
+  background: var(--raise);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--ink-2);
+  font-size: calc(14px * var(--reading-scale));
+}
+
+.toggle:hover,
+.open {
+  background: var(--raise);
+}
+
+.spacer {
+  flex: 1 1 0;
+}
+
+.when {
+  color: var(--ink-3);
+  font-size: calc(14px * var(--reading-scale));
+}
+
+/* Quiet, under the sender: that you forwarded this, and to whom. */
+.forwards {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin-top: -8px;
+}
+
+.forward {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 -6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: var(--ink-2);
+  font-size: calc(13px * var(--reading-scale));
+  text-align: left;
+}
+
+button.forward:hover {
+  background: var(--raise);
+}
+
+.forwardWhen {
+  color: var(--ink-3);
+}
+
+.attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

@@ -1,0 +1,15 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  color: var(--ink-3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.content p { margin: 0; }
+.content progress { width: 100%; accent-color: var(--accent); }
+.checksum { overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.actions button:disabled { opacity: 0.5; cursor: not-allowed; }

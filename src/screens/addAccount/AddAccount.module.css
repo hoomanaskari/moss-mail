@@ -1,0 +1,140 @@
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spacer {
+  flex: 1 1 0;
+}
+
+.advanced {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.advancedLabel {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.pair {
+  display: flex;
+  gap: 16px;
+}
+
+.pair > * {
+  flex: 1 1 0;
+}
+
+.listHead {
+  padding-top: 6px;
+}
+
+.count {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.permissions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.permissions ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.permissions li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-2);
+  font-size: 16px;
+}
+
+.keyWorks {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  color: var(--ai);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.eye {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--ink-3);
+}
+
+.colour {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.colourLabel {
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.machine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aiChoice {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  cursor: pointer;
+}
+
+.aiText {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.aiSub {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.aiSize {
+  color: var(--ink-2);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.aiNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.aiNoteLine {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.aiNoteSub {
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.4;
+}

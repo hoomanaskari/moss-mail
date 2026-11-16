@@ -1,0 +1,19 @@
+.caret {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 2px;
+  background: var(--ai);
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    animation: none;
+  }
+}

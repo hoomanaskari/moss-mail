@@ -1,0 +1,59 @@
+.card {
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.text {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.title {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.sub {
+  color: var(--ink-3);
+  font-size: 15px;
+}
+
+.waiting {
+  gap: 18px;
+  padding: 22px 24px;
+}
+
+.waiting .title {
+  font-size: 18px;
+}
+
+.waiting .sub {
+  line-height: 22px;
+}
+
+.ready {
+  gap: 16px;
+  padding: 20px 22px;
+  box-shadow: inset 0 0 0 1px var(--ai-line);
+}
+
+.ready .title {
+  font-size: 20px;
+}
+
+.tile {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ai-bg);
+}

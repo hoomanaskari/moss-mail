@@ -1,0 +1,109 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 600px;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--surface);
+  outline: 1px solid var(--ai-line);
+  outline-offset: -0.5px;
+  box-shadow: 0 12px 32px #00000066;
+}
+
+.instruction {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.field {
+  flex: 1 1 0;
+  min-width: 0;
+  border: none;
+  background: none;
+  outline: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  caret-color: var(--ai);
+}
+
+.field::placeholder {
+  color: var(--ink-3);
+}
+
+.hint {
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.head {
+  padding: 10px 10px 4px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.on {
+  background: var(--raise);
+}
+
+/* Pointing at a row is only hinted at; it never moves the highlight. */
+.row:not(.on):not(.off):hover {
+  background: color-mix(in srgb, var(--raise) 45%, transparent);
+}
+
+.off {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.label {
+  color: var(--ink);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.on .label {
+  font-weight: 600;
+}
+
+.sub {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 10px 10px 4px;
+  border-top: 1px solid var(--line);
+}
+
+.footText {
+  flex: 1 1 0;
+  color: var(--ink-3);
+  font-size: 13px;
+}

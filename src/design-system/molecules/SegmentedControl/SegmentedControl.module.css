@@ -1,0 +1,48 @@
+.control {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.segment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 7px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.label {
+  font-size: 14px;
+}
+
+.on {
+  background: var(--raise);
+  color: var(--ink);
+}
+
+.on .label {
+  font-weight: 700;
+}
+
+.sm {
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.sm .segment {
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.sm .label {
+  font-size: 13px;
+}

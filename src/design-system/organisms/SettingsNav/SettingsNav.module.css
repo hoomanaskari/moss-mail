@@ -1,0 +1,58 @@
+.nav {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 2px;
+  width: 250px;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.item:hover {
+  background: var(--surface);
+}
+
+.on,
+.on:hover {
+  background: var(--raise);
+}
+
+.cursor {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 3px;
+  height: 24px;
+  border-radius: 2px;
+  background: var(--ai);
+}
+
+.label {
+  flex: 1 1 0;
+  color: var(--ink-2);
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.on .label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.push {
+  flex: 1 1 0;
+}
+
+.footer {
+  color: var(--ink-3);
+  font-size: 13px;
+}

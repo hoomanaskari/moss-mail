@@ -1,0 +1,31 @@
+.position {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Keeps what acts on this email apart from moving between emails. */
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+}
+
+.positionLabel {
+  color: var(--ink-3);
+  font-size: calc(14px * var(--reading-scale));
+  white-space: nowrap;
+}
+
+.preview {
+  color: var(--body);
+  font-size: calc(18px * var(--reading-scale));
+  letter-spacing: 0.2px;
+  line-height: 31px;
+}
+
+/* The newest message, marked for Ask Moss's source chips; it takes no room of its own. */
+.latest,
+.sending {
+  display: contents;
+}

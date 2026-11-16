@@ -1,0 +1,17 @@
+/* Keep the spaces around a mark: they are part of the text runs. */
+.text {
+  white-space: pre;
+}
+
+.mark {
+  display: inline-block;
+  padding: 0 2px;
+  border-radius: 4px;
+  background: var(--raise);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.raised {
+  background: var(--line);
+}

@@ -1,0 +1,74 @@
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.text {
+  flex: 1 1 0;
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.card {
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.inset {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--raise);
+}
+
+.warn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--due-bg);
+}
+.warn .text {
+  color: var(--due);
+  font-weight: 600;
+}
+
+.plain {
+  padding: 0 14px;
+}
+
+.note,
+.caution {
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+.note .text,
+.caution .text {
+  line-height: 20px;
+}
+
+.note {
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.caution {
+  background: var(--due-bg);
+}
+.caution .text {
+  color: var(--due);
+  font-weight: 600;
+}
+
+.footnote {
+  gap: 8px;
+}
+.footnote .text {
+  color: var(--ink-3);
+}

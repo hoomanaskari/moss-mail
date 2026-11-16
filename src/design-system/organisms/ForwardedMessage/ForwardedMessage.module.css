@@ -1,0 +1,49 @@
+/* Set off from your text by a rule, like quoted text in the reader; lined up with the editor's 4px inset. */
+.forwarded {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 4px;
+  padding-left: 16px;
+  border-left: 2px solid var(--line);
+  user-select: text;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  color: var(--ink-3);
+  font-size: calc(13px * var(--reading-scale));
+  font-weight: 600;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  font-size: calc(13px * var(--reading-scale));
+}
+
+.label {
+  flex-shrink: 0;
+  width: 56px;
+  color: var(--ink-3);
+}
+
+.value {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink-2);
+}

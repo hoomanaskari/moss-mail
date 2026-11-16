@@ -1,0 +1,47 @@
+{
+  "about": "Which signature an email gets. Read by both `pick_signature` (crates/moss-core/src/signatures.rs) and `pickSignature` (src/state/signatures.ts), so the two can't drift.",
+  "settings": {
+    "signatures": [
+      { "id": "work-full", "name": "Work (full)", "lines": ["Maya Ross", "Design lead, Northwind", "northwind.co"] },
+      { "id": "work-short", "name": "Work (short)", "lines": ["Maya"] },
+      { "id": "studio", "name": "Studio", "lines": ["Maya Ross", "Ross Studio", "rossstudio.art"] },
+      { "id": "personal", "name": "Personal", "lines": ["Maya Ross"] },
+      { "id": "prints", "name": "Prints", "lines": ["Maya Ross", "Ross Prints"] },
+      { "id": "spaced", "name": "Spaced", "lines": ["Maya", "  "] }
+    ],
+    "byAccount": {
+      "work": { "newEmails": "work-full", "replies": "work-short" },
+      "studio": { "newEmails": "studio", "replies": "studio" },
+      "gmail": { "newEmails": "personal", "replies": null },
+      "side": { "newEmails": "personal", "replies": "studio" },
+      "blank": { "newEmails": "studio", "replies": "spaced" }
+    },
+    "byAddress": {
+      "prints@rossstudio.art": { "newEmails": "prints", "replies": "prints" },
+      "old@rossstudio.art": { "newEmails": "gone", "replies": null }
+    },
+    "letMossChoose": true,
+    "recent": []
+  },
+  "cases": [
+    { "name": "a new email gets the account's one for new emails", "email": { "accountId": "work", "kind": "new", "signedBefore": 0 }, "pick": { "id": "work-full", "why": "new" } },
+    { "name": "an address with its own choice uses it", "email": { "accountId": "studio", "address": "prints@rossstudio.art", "kind": "new", "signedBefore": 0 }, "pick": { "id": "prints", "why": "new" } },
+    { "name": "addresses match whatever their case", "email": { "accountId": "studio", "address": "Prints@RossStudio.art", "kind": "new", "signedBefore": 0 }, "pick": { "id": "prints", "why": "new" } },
+    { "name": "an address without a choice uses its account's", "email": { "accountId": "studio", "address": "hello@rossstudio.art", "kind": "new", "signedBefore": 0 }, "pick": { "id": "studio", "why": "new" } },
+    { "name": "a first reply gets the one for replies", "email": { "accountId": "work", "kind": "reply", "signedBefore": 0 }, "pick": { "id": "work-short", "why": "reply" } },
+    { "name": "a first reply keeps a full one for replies", "email": { "accountId": "studio", "kind": "reply", "signedBefore": 0 }, "pick": { "id": "studio", "why": "reply" } },
+    { "name": "a later reply keeps a one-line one", "email": { "accountId": "work", "kind": "reply", "signedBefore": 1 }, "pick": { "id": "work-short", "why": "short" } },
+    { "name": "a later reply drops a full one", "email": { "accountId": "studio", "kind": "reply", "signedBefore": 2 }, "pick": { "id": null, "why": "quick" } },
+    { "name": "a later reply swaps to the address's one-line one", "email": { "accountId": "side", "kind": "reply", "signedBefore": 1 }, "pick": { "id": "personal", "why": "short" } },
+    { "name": "blank lines don't count", "email": { "accountId": "blank", "kind": "reply", "signedBefore": 1 }, "pick": { "id": "spaced", "why": "short" } },
+    { "name": "None for replies stays none", "email": { "accountId": "gmail", "kind": "reply", "signedBefore": 0 }, "pick": { "id": null, "why": "noneSet" } },
+    { "name": "None for replies stays none later on", "email": { "accountId": "gmail", "kind": "reply", "signedBefore": 3 }, "pick": { "id": null, "why": "noneSet" } },
+    { "name": "a forward goes to someone new, so it gets the one for new emails", "email": { "accountId": "work", "kind": "forward", "signedBefore": 0 }, "pick": { "id": "work-full", "why": "forward" } },
+    { "name": "a forward ignores the back-and-forth", "email": { "accountId": "studio", "kind": "forward", "signedBefore": 3 }, "pick": { "id": "studio", "why": "forward" } },
+    { "name": "an account with no choice gets none", "email": { "accountId": "other", "kind": "new", "signedBefore": 0 }, "pick": { "id": null, "why": "noneSet" } },
+    { "name": "a deleted signature isn't added", "email": { "accountId": "studio", "address": "old@rossstudio.art", "kind": "new", "signedBefore": 0 }, "pick": { "id": null, "why": "noneSet" } },
+    { "name": "off: a later reply keeps the one for replies", "letMossChoose": false, "email": { "accountId": "studio", "kind": "reply", "signedBefore": 2 }, "pick": { "id": "studio", "why": "reply" } },
+    { "name": "off: a forward gets the one for replies", "letMossChoose": false, "email": { "accountId": "work", "kind": "forward", "signedBefore": 0 }, "pick": { "id": "work-short", "why": "reply" } },
+    { "name": "off: a new email gets the one for new emails", "letMossChoose": false, "email": { "accountId": "work", "kind": "new", "signedBefore": 0 }, "pick": { "id": "work-full", "why": "new" } }
+  ]
+}

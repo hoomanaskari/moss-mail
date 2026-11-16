@@ -1,0 +1,18 @@
+.column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  padding: 32px var(--page-gutter) 0;
+}
+
+.syncProblem {
+  flex-shrink: 0;
+  margin-bottom: 18px;
+}
+
+/* What the server said: on its own line, quieter than the sentence above it. */
+.syncReason {
+  display: block;
+  color: var(--ink-3);
+}

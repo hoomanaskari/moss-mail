@@ -1,0 +1,25 @@
+[package]
+name = "moss-store"
+description = "Moss's local mail database: SQLite storage, threading and keyword search."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+moss-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+rusqlite = { version = "0.41", features = ["bundled", "backup", "hooks", "limits"] }
+mail-parser = "1"
+zstd = "0.13"
+regex = "1"
+base64 = "0.23"
+sha2 = "0.10"
+thiserror = "2"
+
+tempfile = "3"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"

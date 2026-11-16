@@ -1,0 +1,24 @@
+.ring {
+  flex-shrink: 0;
+  display: block;
+}
+
+.value {
+  transition: stroke-dasharray var(--dur) var(--ease);
+}
+
+.ring[data-spinning] {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring[data-spinning] {
+    animation-duration: 4s;
+  }
+}

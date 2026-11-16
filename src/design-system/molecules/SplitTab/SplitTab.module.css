@@ -1,0 +1,65 @@
+.tab {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 7px;
+  padding: 0 0 12px;
+  white-space: nowrap;
+}
+
+.label {
+  color: var(--ink-3);
+  font-size: 16px;
+}
+
+.count {
+  color: var(--ink-3);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Has unread mail: a dot after the count, and a brighter label. */
+.unread .label {
+  color: var(--ink-2);
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+/* Read aloud, not shown. */
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Opens another view (Drafts, Scheduled): an icon and a smaller label set it apart from the tabs. */
+.link {
+  gap: 5px;
+}
+.link .label {
+  font-size: 14px;
+}
+
+.tab:hover .label {
+  color: var(--ink-2);
+}
+
+.selected {
+  box-shadow: inset 0 -2px 0 var(--ink);
+}
+
+.selected .label,
+.tab.selected:hover .label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.selected .count {
+  color: var(--ink-2);
+}

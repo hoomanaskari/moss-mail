@@ -1,0 +1,7 @@
+.panel { display: grid; flex: 0 1 auto; min-height: 0; max-height: min(70vh, 640px); overflow: auto; scrollbar-width: thin; gap: 12px; padding: 20px; border: 1px solid var(--line); border-radius: 12px; }
+.panel h2, .panel h3, .panel p { margin: 0; }
+.entries { display: grid; gap: 8px; padding: 0; list-style: none; }
+.entries li { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.review { display: grid; gap: 12px; }
+.review label { display: flex; align-items: center; gap: 8px; }
+.body { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow: auto; font: inherit; }

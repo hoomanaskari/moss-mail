@@ -1,0 +1,164 @@
+/*
+ * Moss design tokens.
+ * Source of truth: design.pen variables (the `x-*` set, theme axis `x-mode`).
+ * Names drop the `x-` prefix; values must stay identical to the design file.
+ */
+
+:root {
+  --font: "Figtree Variable", "Figtree", system-ui, sans-serif;
+
+  /* Page side padding: 120px at the design's 1440px width, shrinking on narrower windows. */
+  --page-gutter: clamp(24px, 8.333vw, 120px);
+
+  /* Width of the window controls plus the top bar gap after them (design dots: 52 + 16). */
+  --window-controls-span: 68px;
+
+  --radius-key: 5px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+  --radius-3xl: 16px;
+
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur: 180ms;
+}
+
+/* macOS app: the real traffic lights span 60px. */
+:root[data-titlebar="mac"] {
+  --window-controls-span: 76px;
+}
+
+/* Windows and Linux app: the OS draws its own title bar, so there are no controls in ours. */
+:root[data-titlebar="native"] {
+  --window-controls-span: 0px;
+}
+
+/*
+ * Reading size (Settings → Appearance): the text of the inbox list, the reading view and emails.
+ * Email text is 16 / 18 / 20px; everything else on those screens scales by the same ratio (`--reading-scale`).
+ * The Ask Moss chat reads a step smaller, in its narrow panel: 14 / 16 / 18px (`--chat-size`).
+ */
+:root {
+  --reading-size: 18px;
+  --reading-leading: 31px;
+  --reading-scale: 1;
+  --chat-size: 16px;
+  --chat-leading: 28px;
+}
+
+:root[data-reading="smaller"] {
+  --reading-size: 16px;
+  --reading-leading: 28px;
+  --reading-scale: calc(16 / 18);
+  --chat-size: 14px;
+  --chat-leading: 24px;
+}
+
+:root[data-reading="larger"] {
+  --reading-size: 20px;
+  --reading-leading: 34px;
+  --reading-scale: calc(20 / 18);
+  --chat-size: 18px;
+  --chat-leading: 31px;
+}
+
+:root[data-theme="dark"],
+/* A part of the page drawn in the other theme, e.g. the theme previews in Settings. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #161514;
+  --surface: #1e1d1b;
+  --raise: #282623;
+  --line: #33302c;
+  --ink: #ece7de;
+  --ink-2: #b3ac9f;
+  --ink-3: #8d8679;
+  --body: #ddd7cc;
+  --accent: #0f7a6f;
+  --on-accent: #ffffff;
+  --key-on-accent: #ffffff26;
+  --ai: #5ccfc1;
+  --ai-bg: #16302c;
+  --ai-ink: #c6f0e9;
+  --ai-line: #2a5550;
+  --ai-select: #3c7a72;
+  --work: #7c9cf5;
+  --personal: #e8946c;
+  --studio: #e58aa6;
+  --green: #8cc084;
+  --violet: #b09bee;
+  --sky: #6db8e3;
+  --red: #f08a7e;
+  --sand: #cdb78f;
+  --olive: #bdc170;
+  --due: #e9c46a;
+  --due-bg: #3a3220;
+  --badge-ink: #161514;
+  --avatar: #2b3556;
+  --scrim: #0b0a09b3;
+  --photo-ink: #f4f0e8;
+  --photo-ink-2: #e2dcd0;
+  --photo-ink-3: #b8b1a4;
+  --shade-0: #16151400;
+  --shade-1: #161514e6;
+  --glass: #ffffff1a;
+  --glass-line: #ffffff33;
+  --invert: #f4f0e8;
+  --invert-ink: #161514;
+
+  /* Effects (design.pen node effects, not variables) */
+  --shadow-palette: 0 30px 80px #000000a0;
+  --shadow-popover: 0 12px 32px #00000059;
+  --shadow-picker: 0 16px 40px #00000059;
+}
+
+:root[data-theme="light"],
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --raise: #f1ede6;
+  --line: #e4ded4;
+  --ink: #1f1d1a;
+  --ink-2: #58524a;
+  --ink-3: #736c61;
+  --body: #2e2a25;
+  --accent: #0f7a6f;
+  --on-accent: #ffffff;
+  --key-on-accent: #ffffff2e;
+  --ai: #0e7368;
+  --ai-bg: #e1f2ee;
+  --ai-ink: #0a4a43;
+  --ai-line: #a8d6cf;
+  --ai-select: #7cc0b6;
+  --work: #2d4ba8;
+  --personal: #b0522a;
+  --studio: #b23f66;
+  --green: #3b7535;
+  --violet: #6447b5;
+  --sky: #1b6694;
+  --red: #b3362b;
+  --sand: #7a6338;
+  --olive: #5c6620;
+  --due: #6b4e07;
+  --due-bg: #f6e7b0;
+  --badge-ink: #ffffff;
+  --avatar: #dce3f4;
+  --scrim: #2a241c59;
+  --photo-ink: #1f1d1a;
+  --photo-ink-2: #3a352e;
+  --photo-ink-3: #5a544b;
+  --shade-0: #faf8f400;
+  --shade-1: #faf8f4eb;
+  --glass: #ffffffb3;
+  --glass-line: #1f1d1a26;
+  --invert: #1f1d1a;
+  --invert-ink: #faf8f4;
+
+  --shadow-palette: 0 24px 64px #2a20103d;
+  --shadow-popover: 0 12px 32px #2a20102e;
+  --shadow-picker: 0 16px 40px #2a20103d;
+}

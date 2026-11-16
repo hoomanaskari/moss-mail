@@ -1,0 +1,55 @@
+.note {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px 10px 14px;
+  border-radius: 10px;
+  background: var(--ai-bg);
+}
+
+.words {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lead {
+  color: var(--ai);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.text {
+  color: var(--ai-ink);
+  font-size: 14px;
+}
+
+.action {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 9px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  outline: 1px solid var(--ai-line);
+  outline-offset: -0.5px;
+  color: var(--ai-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.action:hover {
+  background: color-mix(in srgb, var(--ai-line) 40%, transparent);
+}
+
+.action:focus-visible {
+  outline: 2px solid var(--ai);
+}

@@ -1,0 +1,57 @@
+.box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 10px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.box:focus-within {
+  outline-color: var(--ai-line);
+}
+
+.input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  color: var(--ink);
+  caret-color: var(--ai);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.input::placeholder {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.input[type="password"] {
+  letter-spacing: 1px;
+}
+
+.compact {
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.compact .input {
+  font-size: 15px;
+}
+
+/* design.pen: a 1.5px amber stroke centred on the edge. */
+.invalid,
+.invalid:focus-within {
+  outline: none;
+  box-shadow:
+    0 0 0 0.75px var(--due),
+    inset 0 0 0 0.75px var(--due);
+}

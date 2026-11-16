@@ -1,0 +1,36 @@
+/* Looks like CommandHint beside it, as a square. */
+.refresh {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.refresh:hover {
+  background: var(--raise);
+}
+
+.refresh > span {
+  display: grid;
+}
+
+.turn {
+  animation: turn 600ms ease-in-out;
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turn {
+    animation: none;
+  }
+}

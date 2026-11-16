@@ -1,0 +1,21 @@
+.kind {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.name {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.dot {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.extra {
+  color: var(--ink-3);
+}

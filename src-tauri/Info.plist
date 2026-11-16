@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The icon in Assets.car (from icons/Moss.icon, see scripts/app-icon.sh), whose light and
+	     dark looks follow the Mac's appearance on macOS 26 and later. Older macOS uses
+	     CFBundleIconFile, the icon.icns Tauri adds. -->
+	<key>CFBundleIconName</key>
+	<string>Moss</string>
+</dict>
+</plist>

@@ -1,0 +1,120 @@
+/* A model's Markdown, sized to whatever holds it: it takes the font, size and ink around it. */
+.markdown {
+  overflow-wrap: anywhere;
+}
+
+/* Everything inside keeps the line height around it (Moss sets 1.2 on every element by default),
+   so a point, a table cell or a heading is as easy to read as the paragraph beside it. */
+.markdown *,
+.inline * {
+  line-height: inherit;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown p,
+.markdown ul,
+.markdown ol,
+.markdown blockquote,
+.markdown pre,
+.markdown table {
+  margin: 0 0 0.6em;
+}
+
+/* Headings stay the size of the text: bold, so a card doesn't shout. */
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  margin: 0.9em 0 0.3em;
+  font-size: 1em;
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.3em;
+}
+
+.markdown li + li {
+  margin-top: 0.2em;
+}
+
+.markdown li > ul,
+.markdown li > ol {
+  margin: 0.2em 0 0;
+}
+
+.markdown blockquote {
+  padding-left: 0.8em;
+  border-left: 2px solid var(--line);
+  color: var(--ink-2);
+}
+
+.markdown hr {
+  margin: 0.9em 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.markdown strong,
+.inline strong {
+  font-weight: 650;
+}
+
+.markdown code,
+.inline code {
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-sm);
+  background: var(--shade-1);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.9em;
+}
+
+.markdown pre {
+  padding: 0.6em 0.8em;
+  border-radius: var(--radius-md);
+  background: var(--shade-1);
+  overflow-x: auto;
+}
+
+.markdown pre code {
+  padding: 0;
+  background: none;
+}
+
+.markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.markdown th,
+.markdown td {
+  padding: 0.3em 0.6em;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.markdown th {
+  font-weight: 650;
+}
+
+.markdown a,
+.inline a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--ink-3);
+  text-underline-offset: 2px;
+  cursor: pointer;
+}

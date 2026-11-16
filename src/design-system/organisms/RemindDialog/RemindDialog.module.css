@@ -1,0 +1,54 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+}
+
+.card {
+  position: absolute;
+  top: clamp(16px, 22vh, 220px);
+  left: 50%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  box-shadow: var(--shadow-palette);
+  transform: translateX(-50%);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 280px;
+  padding: 14px 16px 10px;
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.subject {
+  overflow: hidden;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Focused only so keys stop going to the text behind it. */
+.card:focus {
+  outline: none;
+}

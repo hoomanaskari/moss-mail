@@ -1,0 +1,45 @@
+/* Above the shortcut bar, centred in the window. It only slides in, never fades: a paused animation must not hide it. */
+.dock {
+  position: fixed;
+  bottom: 72px;
+  left: 50%;
+  z-index: 20;
+  transform: translateX(-50%);
+  animation: rise 160ms ease-out;
+}
+
+/* Inbox zero has no shortcut bar and its buttons fill the bottom, so the note drops into the top right corner, as far from the top as from the side. */
+.dock[data-place="top-right"] {
+  top: 24px;
+  right: 24px;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  animation-name: drop;
+}
+
+@keyframes rise {
+  from {
+    transform: translate(-50%, 8px);
+  }
+}
+
+@keyframes drop {
+  from {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock {
+    animation: none;
+  }
+}
+
+/* Empties smoothly between redraws. */
+.countdown {
+  flex-shrink: 0;
+}
+.left {
+  transition: stroke-dasharray 200ms linear;
+}

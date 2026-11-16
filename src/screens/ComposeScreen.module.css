@@ -1,0 +1,122 @@
+.saved {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.head {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kind {
+  color: var(--ink-3);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.subject,
+.subjectInput {
+  margin: 0;
+  color: var(--ink);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.subjectInput {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  caret-color: var(--ai);
+}
+
+.subjectInput::placeholder {
+  color: var(--ink-3);
+}
+
+/* Same height as an empty editor, so nothing shifts while it loads. */
+.editorPlaceholder {
+  min-height: 62px;
+}
+
+/* Body and signature: the signature row starts 22px under the last line, like a paragraph gap plus 6. */
+.body {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Write with Moss opens over the text, near where you write. */
+.body {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  z-index: 10;
+  top: 44px;
+  left: 0;
+}
+
+/* What Moss writes, as it writes it: the editor's text style, with a teal cursor. */
+.streaming {
+  margin: 0;
+  padding: 4px;
+  color: var(--body);
+  font-size: 18px;
+  letter-spacing: 0.2px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.streamCaret {
+  display: inline-block;
+  width: 2px;
+  height: 22px;
+  margin-left: 1px;
+  background: var(--ai);
+  vertical-align: text-bottom;
+}
+
+/* Files going with the email, under the text: the reading view's cards, each with Remove. */
+.files {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* The whole composer takes dropped files. Not in design.pen yet. */
+.dropZone {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.dropping {
+  position: absolute;
+  z-index: 20;
+  inset: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px dashed var(--ai);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  color: var(--ai);
+  font-size: 16px;
+  font-weight: 600;
+  pointer-events: none;
+}

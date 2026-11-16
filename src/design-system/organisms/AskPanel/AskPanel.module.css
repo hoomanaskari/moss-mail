@@ -1,0 +1,462 @@
+/* design.pen "Ask Panel" (frames xMcPb, LC7J6, dqC1r, a9w3A, AkCIm). Strokes are inset shadows, as in Pencil. */
+.panel {
+  display: flex;
+  flex: 0 0 440px;
+  flex-direction: column;
+  width: 440px;
+  min-height: 0;
+  background: var(--surface);
+  box-shadow: inset 1px 0 0 var(--line);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px 14px;
+  box-shadow: inset 1px -1px 0 var(--line);
+}
+
+.titleRow,
+.keyHint,
+.who,
+.chips,
+.chip,
+.cardTop,
+.cardFile,
+.draftHead,
+.draftActions,
+.row,
+.chatActions,
+.draftReply,
+.input,
+.foot,
+.open {
+  display: flex;
+  align-items: center;
+}
+
+.titleRow {
+  gap: 8px;
+}
+
+.title {
+  flex: 1 1 0;
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.keyHint {
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.messages {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.intro {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.picked {
+  background: var(--raise);
+  box-shadow: inset 0 0 0 1px var(--ai-select);
+}
+
+.hint,
+.note {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.you {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Your question: the same size and line height as the answer, in the ink of your own words. */
+.bubble {
+  max-width: 85%;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: var(--raise);
+  color: var(--ink);
+  font-size: var(--chat-size);
+  letter-spacing: 0.2px;
+  line-height: var(--chat-leading);
+}
+
+.moss {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.all .moss {
+  gap: 10px;
+}
+
+.who {
+  gap: 6px;
+  color: var(--ai);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.text {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* The answer: the model's Markdown, set like an email body a step smaller (the chat size for the
+   reading size you chose in Settings, in the body colour), so it reads easily, dyslexic readers included. */
+.answer {
+  color: var(--body);
+  font-size: var(--chat-size);
+  letter-spacing: 0.2px;
+  line-height: var(--chat-leading);
+}
+
+.answer p,
+.answer ul,
+.answer ol,
+.answer blockquote,
+.answer pre,
+.answer table {
+  margin-bottom: 0.9em;
+}
+
+.answer li + li {
+  margin-top: 0.5em;
+}
+
+.answer li::marker {
+  color: var(--ink-3);
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton span {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--ai-line);
+}
+
+.skeleton span:last-child {
+  width: 64%;
+}
+
+.chips {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  gap: 6px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--ink-2);
+  font-size: 12px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* A long file name ends in "…"; the whole name is its tooltip. */
+.chipName {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  text-align: left;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.card.picked {
+  background: var(--raise);
+  box-shadow: inset 0 0 0 1px var(--ai-select);
+}
+
+.cardTop {
+  gap: 8px;
+  min-width: 0;
+}
+
+/* A long name is cut with … so the time stays inside the card. */
+.cardFrom,
+.replyFrom {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardTop > * {
+  flex-shrink: 0;
+}
+
+.cardTop > .cardFrom,
+.cardTop > .replyFrom {
+  flex-shrink: 1;
+}
+
+.cardFrom {
+  font-size: 14px;
+}
+
+.cardWhen,
+.replyWhen {
+  flex: 1 1 0;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.cardWhen {
+  font-size: 13px;
+}
+
+.cardSubject {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardFile {
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.draft {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--ai-line);
+}
+
+.replyingTo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--raise);
+}
+
+.replyFrom {
+  font-size: 13px;
+}
+
+.replyWhen {
+  font-size: 12px;
+}
+
+.open {
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.snippet {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ink-2);
+  font-size: 13px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.draftHead {
+  gap: 6px;
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.draftText {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.draftActions,
+.row {
+  gap: 8px;
+}
+
+.spacer {
+  flex: 1 1 0;
+}
+
+.row .aiButton {
+  outline-color: var(--ai-line);
+}
+
+/* The draft card's Edit and Send are the design's 30px buttons. */
+.draftActions .small {
+  padding: 6px 10px;
+}
+
+.draftActions .send {
+  padding-left: 12px;
+}
+
+.draftActions .small span {
+  font-size: 13px;
+}
+
+.inputArea {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px 14px;
+  box-shadow: inset 1px 1px 0 var(--line);
+}
+
+.chatActions {
+  gap: 8px;
+}
+
+.draftReply,
+.newChat {
+  gap: 7px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 13px;
+}
+
+.draftReply {
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--ai-line);
+}
+
+.newChat {
+  color: var(--ink-2);
+}
+
+.input {
+  gap: 10px;
+  padding: 12px 12px 12px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--ai-line);
+}
+
+.field {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  caret-color: var(--ai);
+}
+
+.field::placeholder {
+  color: var(--ink-3);
+}
+
+.foot {
+  gap: 6px;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+/* What Moss changed: one line per email, a check before each. */
+.did {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.didItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.didItem > :first-child {
+  flex: none;
+  margin-top: 2px;
+}
+
+.didText {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.draftLine {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notSent {
+  flex: none;
+  color: var(--ink-3);
+  font-weight: 400;
+}

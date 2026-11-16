@@ -1,0 +1,7 @@
+/* "Let Moss sort it" sits apart from the tabs: it hands the choice back. */
+.moss {
+  margin-top: 4px;
+  box-shadow: 0 -1px 0 var(--line);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}

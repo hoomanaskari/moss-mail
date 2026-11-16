@@ -1,0 +1,40 @@
+.layout {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.scroll {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 40px 32px 0;
+  overflow-y: auto;
+}
+
+/* 740px of text; 350px sides at the design's 1440px window. */
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+  max-width: 740px;
+  min-height: 100%;
+  margin: 0 auto;
+  /* Grows with a long email instead of stretching to the window, so the space under the reply bar stays below it. */
+  align-self: flex-start;
+  padding-bottom: 28px;
+}
+
+.compact {
+  padding-top: 28px;
+}
+
+.compact .column {
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.push {
+  flex: 1 1 0;
+}

@@ -1,0 +1,30 @@
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Quiet until hovered, so the email stays the loudest thing on screen. */
+.action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 7px;
+}
+
+.action:hover,
+.open {
+  background: var(--raise);
+}
+
+/* Named for screen readers and tests; the icon and key say it on screen. */
+.name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

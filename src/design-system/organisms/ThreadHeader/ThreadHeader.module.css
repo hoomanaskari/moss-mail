@@ -1,0 +1,69 @@
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Each decision Moss made, on the meta line after the labels; they wrap rather than crowd. */
+.reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mailbox {
+  color: var(--ink-2);
+  font-size: calc(14px * var(--reading-scale));
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.subject {
+  margin: 0;
+  color: var(--ink);
+  font-size: calc(34px * var(--reading-scale));
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  line-height: 41px;
+}
+
+.ask {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: var(--ai-bg);
+}
+
+.askText {
+  flex: 1 1 0;
+  color: var(--ai-ink);
+  font-size: calc(16px * var(--reading-scale));
+  font-weight: 600;
+  line-height: 23px;
+}
+
+.sorted {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 4px;
+  color: var(--ai);
+  font-size: calc(13px * var(--reading-scale));
+}
+
+/* Your own choice: plain ink, not the AI's teal. */
+.moved {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 4px;
+  color: var(--ink-2);
+  font-size: calc(13px * var(--reading-scale));
+}

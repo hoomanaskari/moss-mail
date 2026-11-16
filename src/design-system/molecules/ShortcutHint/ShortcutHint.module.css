@@ -1,0 +1,30 @@
+.hint {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.label {
+  white-space: nowrap;
+}
+
+.sm {
+  font-size: 13px;
+}
+
+.md {
+  font-size: 14px;
+}
+
+.ink-2 {
+  color: var(--ink-2);
+}
+
+.ink-3 {
+  color: var(--ink-3);
+}
+
+.ai {
+  color: var(--ai);
+  font-weight: 700;
+}

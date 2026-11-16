@@ -1,0 +1,36 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "moss-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev"
+      ],
+      "port": 1420
+    },
+    {
+      "name": "moss-web-alt",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "exec",
+        "vite",
+        "--port",
+        "1431"
+      ],
+      "port": 1431
+    },
+    {
+      "name": "moss-web-sorting",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "exec",
+        "vite",
+        "--port",
+        "1447",
+        "--strictPort"
+      ],
+      "port": 1447
+    }
+  ]
+}

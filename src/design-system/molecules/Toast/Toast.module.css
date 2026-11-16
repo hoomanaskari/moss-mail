@@ -1,0 +1,43 @@
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 8px 0 16px;
+  border-radius: 12px;
+  background: var(--invert);
+  box-shadow: var(--shadow-popover);
+  color: var(--invert-ink);
+  white-space: nowrap;
+}
+
+/* With nothing to act on, the text gets the same space on both sides. */
+.toast:not(:has(.action)) {
+  padding-right: 16px;
+}
+
+.text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  margin-left: 6px;
+  padding: 0 6px 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.action:hover {
+  background: #8882;
+}

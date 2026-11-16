@@ -1,0 +1,16 @@
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.value {
+  color: var(--photo-ink);
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.label {
+  color: var(--photo-ink-3);
+  font-size: 15px;
+}

@@ -1,0 +1,81 @@
+.row {
+  height: 68px;
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+.provider {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 3px;
+  width: 260px;
+}
+
+.summary {
+  color: var(--ink-2);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ok {
+  gap: 6px;
+}
+
+.edit {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.editHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 14px;
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.label {
+  flex-shrink: 0;
+  width: 120px;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nameInput {
+  width: 320px;
+}
+
+.spacer {
+  flex: 1 1 0;
+}
+
+.remove {
+  padding-top: 16px;
+  box-shadow: inset 0 1px 0 var(--line);
+}
+
+.removeText {
+  flex: 1 1 0;
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 20px;
+}

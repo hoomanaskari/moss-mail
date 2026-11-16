@@ -1,0 +1,89 @@
+.bar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 12px 12px 18px;
+  border-radius: 12px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.hint {
+  flex: 1 1 0;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+/* Reply field: shown when there are no suggested replies. */
+.field {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px 12px 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.reply {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  text-align: left;
+}
+
+/* One line: a long name or address ends in an ellipsis (the full one is the field's tooltip). */
+.placeholder {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The icon and R key cap keep their size, so the cap never slides under Quick reply. */
+.reply > :not(.placeholder) {
+  flex-shrink: 0;
+}
+
+.reply:hover .placeholder {
+  color: var(--ink-2);
+}
+
+.divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 22px;
+  background: var(--line);
+}
+
+.quick {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.quickLabel {
+  color: var(--ai);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Keep the reply icon and shortcut visible beside a long address. */
+.reply > :not(.placeholder) { flex-shrink: 0; }

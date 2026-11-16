@@ -1,0 +1,385 @@
+/* A neutral card, as readable as the email itself: teal marks it as Moss's (the outline, the
+   label, dates and dots), the words are the email's own ink. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 18px 16px;
+  border-radius: 10px;
+  background: var(--surface);
+  outline: 1px solid var(--ai-line);
+  outline-offset: -1px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.label {
+  color: var(--ai);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.why {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.info {
+  position: relative;
+  display: inline-flex;
+  cursor: default;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: -14px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  width: 360px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  box-shadow: 0 8px 24px #00000059;
+}
+
+.info:hover .tooltip,
+.info:focus .tooltip {
+  display: flex;
+}
+
+.tipTitle {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tipText {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.tipHint {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.switch,
+.quiet {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.switch {
+  padding: 3px 6px 3px 9px;
+  color: var(--ink);
+}
+
+.quiet {
+  color: var(--ink-2);
+}
+
+.switch:hover,
+.quiet:hover {
+  background: var(--raise);
+}
+
+/* Blocks well apart, so each idea reads as one. */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.heading {
+  margin: 0;
+  color: var(--ai);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.text {
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* One point per line: a teal dot and a hanging indent, so where each starts is plain. */
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  position: relative;
+  padding-left: 18px;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.line::before {
+  content: "";
+  position: absolute;
+  top: 0.62em;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ai-select);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.action_ {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Outlined in AI teal; filled when ticked. */
+.check {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border-radius: 5px;
+  outline: 1.5px solid var(--ai-select);
+  outline-offset: -1.5px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.check:checked {
+  background: var(--ai-select)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
+    center / 12px no-repeat;
+}
+
+.task {
+  flex: 1 1 0;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.ticked {
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+
+.due {
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: var(--due-bg);
+  color: var(--due);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+}
+
+.fact {
+  display: flex;
+  gap: 12px;
+}
+
+.factLabel {
+  flex: 0 0 92px;
+  color: var(--ai);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  line-height: 1.9;
+  text-transform: uppercase;
+}
+
+.factValue {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  /* A long link breaks anywhere rather than running out of the card. */
+  overflow-wrap: anywhere;
+}
+
+.factList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.factDetail {
+  color: var(--ink-2);
+}
+
+.more {
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ai);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.more:hover {
+  text-decoration: underline;
+}
+
+.link {
+  color: var(--ai);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ai-line);
+}
+
+.question {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  outline: 1px solid var(--ai-line);
+  outline-offset: -1px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.strong {
+  outline-color: var(--ai-select);
+  font-weight: 700;
+}
+
+.action:hover {
+  background: var(--raise);
+}
+
+.problem {
+  color: var(--due);
+  font-size: 13px;
+}
+
+.instruction {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: var(--bg);
+  outline: 1px solid var(--ai-line);
+  outline-offset: -1px;
+}
+
+.input {
+  flex: 1 1 0;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--ink-3);
+}
+
+.hint {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton span {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--ai-line);
+}
+
+.skeleton span:last-child {
+  width: 50%;
+}

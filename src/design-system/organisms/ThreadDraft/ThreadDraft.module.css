@@ -1,0 +1,66 @@
+/* Your unsent reply, below the conversation: the reading column's width, on the page's own surface. */
+.draft {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 16px 18px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-width: 0;
+  font-size: calc(13px * var(--reading-scale));
+}
+
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-size: inherit;
+  font-weight: 700;
+}
+
+.line {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notSent {
+  margin-left: auto;
+  color: var(--ink-3);
+}
+
+.text,
+.empty {
+  margin: 0;
+  font-size: calc(15px * var(--reading-scale));
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.text {
+  color: var(--ink);
+}
+
+.empty {
+  color: var(--ink-3);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spacer {
+  flex: 1;
+}

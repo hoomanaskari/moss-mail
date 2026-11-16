@@ -1,0 +1,53 @@
+[package]
+name = "moss"
+description = "Moss: a calm, keyboard-first email client with private AI."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+# The binary is "Moss" so macOS shows the right name in the Dock and menu bar, in dev builds too.
+[[bin]]
+name = "Moss"
+path = "src/main.rs"
+
+[lib]
+name = "moss_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde.workspace = true
+serde_json.workspace = true
+moss-core.workspace = true
+moss-accounts.workspace = true
+moss-ai.workspace = true
+moss-engine.workspace = true
+moss-mcp.workspace = true
+moss-extract.workspace = true
+moss-providers.workspace = true
+moss-store.workspace = true
+tauri-plugin-opener = "2"
+async-trait = "0.1"
+base64 = "0.23"
+tokio = { version = "1", features = ["sync", "time", "macros", "io-std", "io-util"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-updater = "2"
+
+# Sets the Dock icon while Moss runs (app_icon.rs).
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSData"] }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSApplication", "NSResponder", "NSImage"] }
+
+[dev-dependencies]
+rusqlite = { version = "0.41", features = ["bundled"] }
+moss-ai.workspace = true
+tauri = { version = "2", features = ["test"] }
+tauri-runtime = "2"
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "test-util"] }

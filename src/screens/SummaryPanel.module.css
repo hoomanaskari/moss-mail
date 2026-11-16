@@ -1,0 +1,55 @@
+.anchor {
+  position: relative;
+}
+
+/* Summarise and its arrow, side by side like Remind's: one hover each. */
+.split {
+  display: flex;
+  align-items: center;
+  border-radius: 7px;
+}
+
+/* Open, the two read as one control. */
+.split:has([aria-expanded="true"]) {
+  background: var(--raise);
+}
+
+/* Teal icon, ordinary label: an AI action that does something only when asked. */
+.button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.button:hover {
+  background: var(--raise);
+}
+
+.button:hover,
+.button[aria-expanded="true"] {
+  color: var(--ink);
+}
+
+/* Opens the kinds without writing anything yet. */
+.arrow {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  padding: 0 6px;
+  border-radius: 7px;
+}
+
+.arrow:hover {
+  background: var(--raise);
+}
+
+.menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  left: 0;
+}

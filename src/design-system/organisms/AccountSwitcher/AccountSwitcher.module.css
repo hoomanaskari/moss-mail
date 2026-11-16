@@ -1,0 +1,98 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding-bottom: 18px;
+}
+
+/* Holds the scrolling tabs and the arrow buttons that sit over its edges. */
+.scroller {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/*
+ * With many accounts the tabs scroll sideways; "+" and the trailing item stay put.
+ * A scrolling box clips on every side, which cut off the selected tab's border and focus
+ * rings. 4px of padding, cancelled by a matching negative margin, leaves room for them
+ * without moving anything.
+ */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: -4px;
+  padding: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fades show which side has more accounts. */
+.fadeLeft {
+  mask-image: linear-gradient(to right, transparent 0, #000 96px);
+}
+.fadeRight {
+  mask-image: linear-gradient(to left, transparent 0, #000 96px);
+}
+.fadeLeft.fadeRight {
+  mask-image: linear-gradient(to right, transparent 0, #000 96px, #000 calc(100% - 96px), transparent 100%);
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  transform: translateY(-50%);
+}
+
+.arrow:hover {
+  background: var(--raise);
+}
+
+.arrowLeft {
+  left: 0;
+}
+
+.arrowRight {
+  right: 0;
+}
+
+.add {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.add:hover {
+  background: var(--surface);
+}
+
+.trailing {
+  display: flex;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 16px;
+}

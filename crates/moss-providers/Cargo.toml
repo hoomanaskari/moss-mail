@@ -1,0 +1,32 @@
+[package]
+name = "moss-providers"
+description = "Talks to mail servers: Resend's API, and IMAP with SMTP. Hands raw RFC 822 messages to storage."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+async-trait = "0.1"
+async-imap = { version = "0.12", default-features = false, features = ["runtime-tokio"] }
+base64 = "0.23"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
+futures = "0.3"
+mail-parser = "1"
+lettre = { version = "0.11", default-features = false, features = ["smtp-transport", "tokio1", "tokio1-rustls", "ring", "rustls-platform-verifier"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls-no-provider", "query"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+thiserror = "2"
+tokio = { version = "1", features = ["net", "time", "sync", "macros", "rt"] }
+socket2 = { version = "0.6", features = ["all"] }
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+rustls-platform-verifier = "0.7"
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+rcgen = "0.14"
+tokio = { version = "1", features = ["full", "test-util"] }
+wiremock = "0.6"

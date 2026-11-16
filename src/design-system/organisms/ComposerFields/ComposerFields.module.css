@@ -1,0 +1,132 @@
+.fields {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 12px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.row,
+.rowLast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 8px 14px;
+  cursor: text;
+}
+
+.row {
+  border-bottom: 1px solid var(--line);
+}
+
+.label {
+  flex-shrink: 0;
+  width: 52px;
+  color: var(--ink-3);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.spacer {
+  flex: 1 1 0;
+}
+
+.hint {
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.input {
+  min-width: 2px;
+  padding: 0 4px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 15px;
+  caret-color: var(--ai);
+}
+
+.add {
+  padding-right: 6px;
+  gap: 7px;
+}
+
+.autocomplete {
+  position: absolute;
+  top: calc(100% + 4px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+  padding: 6px;
+  border-radius: 12px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  box-shadow: var(--shadow-popover);
+  cursor: default;
+}
+
+/* Folded summary */
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  white-space: nowrap;
+}
+
+.summaryFrom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summaryAccount {
+  color: var(--ink-2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.summaryPeople {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.summaryTo {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.summaryCc {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.sep {
+  color: var(--ink-3);
+  font-size: 15px;
+}
+
+.small {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.fromRow {
+  cursor: default;
+}

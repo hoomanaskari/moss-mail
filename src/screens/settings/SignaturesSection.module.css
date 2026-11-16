@@ -1,0 +1,223 @@
+.page {
+  gap: 24px;
+}
+
+.choose {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: var(--ai-bg);
+}
+
+.chooseText {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chooseHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chooseTitle {
+  color: var(--ai-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.chooseSub {
+  color: var(--ai-ink);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.list {
+  flex-shrink: 0;
+  width: 300px;
+}
+
+.item {
+  gap: 12px;
+  height: 52px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.itemText {
+  gap: 1px;
+}
+
+.itemName {
+  color: var(--ink-2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.itemNameOn {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.editor {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.label {
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 100px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.line {
+  width: 100%;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  color: var(--ink-2);
+  caret-color: var(--ai);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.first {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.link {
+  color: var(--ai);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hint {
+  flex: 1 1 0;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 8px 8px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.tr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 52px;
+  padding: 0 12px;
+}
+
+.th {
+  height: 32px;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.accountCell {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cell {
+  display: flex;
+  flex-shrink: 0;
+  width: 220px;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.emptyTile {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.emptyText {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.emptyTitle {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.emptySub {
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* An address under its account: indented, so it reads as part of it. */
+.addressRow .accountCell {
+  padding-left: 28px;
+}

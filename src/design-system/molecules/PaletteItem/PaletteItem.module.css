@@ -1,0 +1,43 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.text {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.sub {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.on {
+  background: var(--raise);
+}
+
+.aiOn {
+  background: var(--ai-bg);
+}
+.aiOn .label {
+  color: var(--ai-ink);
+  font-weight: 700;
+}
+.aiOn .sub {
+  color: var(--ai);
+}

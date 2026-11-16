@@ -1,0 +1,92 @@
+.tab {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 10px 10px;
+  border-radius: 10px;
+  text-align: left;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+/* Pointing at a tab is only hinted at, so it never looks like the selected account. */
+.tab:not(.selected):not(.all):hover {
+  background: color-mix(in srgb, var(--surface) 45%, transparent);
+}
+
+/* "All accounts" always sits on a surface. */
+.all {
+  background: var(--surface);
+}
+
+.selected {
+  background: var(--surface);
+  outline: 1.5px solid var(--line);
+  outline-offset: -0.75px;
+}
+
+.all.selected {
+  outline-width: 1px;
+  outline-offset: -0.5px;
+}
+
+.allIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--raise);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  white-space: nowrap;
+}
+
+.name {
+  color: var(--ink-2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* The key floats over the address, so showing it never moves the tabs. */
+.detailRow {
+  position: relative;
+  display: flex;
+}
+
+.key {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.detail {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.problem {
+  color: var(--due);
+  font-weight: 600;
+}
+
+.count {
+  color: var(--ink-3);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.selected .name {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.selected .count {
+  color: var(--ink);
+}

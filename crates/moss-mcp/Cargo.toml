@@ -1,0 +1,33 @@
+[package]
+name = "moss-mcp"
+description = "Moss's MCP server: your own AI agents read your mail and write drafts, on this Mac only."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+base64 = "0.22"
+async-trait = "0.1"
+axum = "0.8.9"
+chrono = { version = "0.4.45", default-features = false, features = ["std"] }
+getrandom = { version = "0.3", default-features = false }
+moss-accounts.workspace = true
+moss-core.workspace = true
+moss-engine.workspace = true
+moss-store.workspace = true
+reqwest = { version = "0.13", default-features = false }
+rmcp = { version = "3.9", features = ["server", "macros", "transport-streamable-http-server"] }
+serde.workspace = true
+serde_json.workspace = true
+thiserror = { version = "2", default-features = false }
+tokio = { version = "1.54.1", features = ["net", "sync", "rt", "macros"] }
+tokio-util = "0.7"
+
+[dev-dependencies]
+rusqlite = { version = "0.41", features = ["bundled"] }
+chrono = { version = "0.4.45", default-features = false, features = ["std", "clock"] }
+rmcp = { version = "3.9", features = ["client", "transport-streamable-http-client-reqwest"] }
+tempfile = "3.27.0"
+tokio = { version = "1", features = ["full"] }

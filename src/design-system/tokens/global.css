@@ -1,0 +1,68 @@
+@import "@fontsource-variable/figtree/wght.css";
+@import "./tokens.css";
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  /* design.pen sizes text boxes at font size × 1.2, rounded to whole pixels. */
+  line-height: round(1.2em, 1px);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+p {
+  margin: 0;
+}
+
+/* Visible focus for keyboard users; the design's row cursor covers list focus. */
+:focus-visible {
+  outline: 2px solid var(--ai);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+  }
+}
+
+/* Dev scenes (?scene=) hold every animation at its first frame, so screenshots match the design. */
+:root[data-scene] *,
+:root[data-scene] ::before,
+:root[data-scene] ::after {
+  animation-play-state: paused !important;
+}

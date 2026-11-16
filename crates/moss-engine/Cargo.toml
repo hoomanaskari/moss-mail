@@ -1,0 +1,31 @@
+[package]
+name = "moss-engine"
+description = "Moss's mail engine: accounts, background sync, and the actions the app's commands run."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+moss-core.workspace = true
+moss-accounts.workspace = true
+moss-store.workspace = true
+moss-providers.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+async-trait = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+regex = "1"
+uuid = { version = "1", features = ["v4"] }
+thiserror = "2"
+tempfile = "3"
+tokio = { version = "1", features = ["sync", "time", "rt", "macros"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[dev-dependencies]
+rusqlite = { version = "0.41", features = ["bundled"] }
+tokio = { version = "1", features = ["full", "test-util"] }
+wiremock = "0.6"

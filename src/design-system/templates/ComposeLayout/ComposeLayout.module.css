@@ -1,0 +1,14 @@
+/* 840px wide; 300px sides at the design's 1440px window. */
+.column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 22px;
+  min-height: 0;
+  padding: 32px max(32px, calc((100% - 840px) / 2)) 28px;
+  overflow-y: auto;
+}
+
+.push {
+  flex: 1 1 0;
+}

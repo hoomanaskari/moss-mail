@@ -1,0 +1,21 @@
+.hint {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px 7px 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  white-space: nowrap;
+}
+
+.hint:hover {
+  background: var(--raise);
+}
+
+.label {
+  color: var(--ink-2);
+  font-size: 14px;
+}

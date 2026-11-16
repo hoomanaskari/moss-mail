@@ -1,0 +1,195 @@
+/* Sits under the editor, lined up with its 4px text inset. */
+.block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chip {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 8px;
+  border-radius: 7px;
+  background: var(--raise);
+  outline: 1px solid var(--ai-select);
+  outline-offset: -0.5px;
+}
+
+.chipLabel {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reason {
+  color: var(--ink-3);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Same type as the body (18 / 31), in quieter ink. */
+.lines {
+  display: flex;
+  flex-direction: column;
+}
+
+.line {
+  color: var(--ink-3);
+  font-size: 18px;
+  letter-spacing: 0.2px;
+  line-height: 31px;
+}
+
+.name {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.link {
+  width: fit-content;
+  color: var(--ai);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.picker {
+  position: absolute;
+  z-index: 3;
+  top: 32px;
+  left: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 440px;
+  padding: 4px 6px 0;
+  border-radius: 12px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  box-shadow: var(--shadow-picker);
+}
+
+.heading {
+  padding: 10px 10px 6px;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* The marked choice: where ↑ ↓ are. It starts on the one picked, whose radio stays filled. */
+.active {
+  background: var(--raise);
+}
+
+/* Pointing at a choice is only hinted at; it never moves the mark. */
+.option:not(.active):hover {
+  background: color-mix(in srgb, var(--raise) 45%, transparent);
+}
+
+.text {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.optionName {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.preview {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 10px;
+  box-shadow: inset 0 1px 0 var(--line);
+}
+
+.why {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.whyText {
+  line-height: 19px;
+}
+
+/* On a Quick reply: no inset, the lines at the reply's quieter size, the picker opening upward. */
+.minimal {
+  padding: 0;
+}
+
+/* Smaller, and cut short before it crowds the reply. */
+.minimal .reason {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+}
+
+.minimal .line {
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.minimal .picker {
+  top: auto;
+  bottom: 32px;
+  left: 0;
+}
+
+/* No signature: said plainly, in the quiet ink of the reason beside it. */
+.none {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.minimal .none {
+  font-size: 12px;
+}

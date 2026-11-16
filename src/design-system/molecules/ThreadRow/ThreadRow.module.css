@@ -1,0 +1,147 @@
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  /* Rows grow and shrink with Reading size, so the list keeps its rhythm. */
+  height: calc(58px * var(--reading-scale));
+  padding: 0 16px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.selected {
+  background: var(--raise);
+}
+
+.cursor {
+  position: absolute;
+  left: 0;
+  /* Centred in a full-height row (14px at the default size). */
+  top: calc((58px * var(--reading-scale) - 30px) / 2);
+  width: 3px;
+  height: 30px;
+  border-radius: 2px;
+  background: var(--ai);
+}
+
+.from {
+  flex-shrink: 0;
+  width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: calc(16px * var(--reading-scale));
+}
+
+.content {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* A long subject ends in "…" instead of running under the time or the shortcuts. */
+.subject {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: calc(16px * var(--reading-scale));
+}
+
+.grow {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The preview takes only the room the subject leaves, so it gives way first. */
+.summary {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ink-3);
+  font-size: calc(16px * var(--reading-scale));
+}
+
+.time {
+  flex-shrink: 0;
+  width: 76px;
+  color: var(--ink-3);
+  font-size: calc(14px * var(--reading-scale));
+  text-align: right;
+}
+
+.attachment {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.shortcuts {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Needs your reply */
+.reply .from,
+.reply .subject {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* For your info */
+.info .from,
+.info .subject {
+  color: var(--ink-2);
+}
+
+/* Coming back later */
+.later {
+  height: calc(52px * var(--reading-scale));
+  border-radius: 0;
+  opacity: 0.8;
+}
+.later .from,
+.later .subject {
+  color: var(--ink-2);
+}
+.later .time {
+  width: 90px;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.later.selected {
+  border-radius: 10px;
+  opacity: 1;
+}
+
+/* Unread: a dot in the margin, and FYI mail as strong as mail that needs you. */
+.dot {
+  position: absolute;
+  left: -18px;
+  top: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+/* Read aloud, not shown. */
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.unread.info .from,
+.unread.info .subject {
+  color: var(--ink);
+  font-weight: 600;
+}

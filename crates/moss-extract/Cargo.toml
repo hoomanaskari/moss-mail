@@ -1,0 +1,27 @@
+[package]
+name = "moss-extract"
+description = "Reads the text inside attachments on this Mac: PDFs, scans and photos of documents, Office files and plain text."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+roxmltree = "0.21"
+zip = { version = "9", default-features = false, features = ["deflate-flate2"] }
+# zip unpacks with flate2; this picks its pure-Rust backend.
+flate2 = "1"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-core-foundation = "0.3"
+objc2-core-graphics = { version = "0.3", default-features = false, features = ["std", "CGImage"] }
+objc2-image-io = { version = "0.3", default-features = false, features = ["std", "CGImageSource", "CGImageProperties", "objc2-core-graphics"] }
+objc2-foundation = "0.3"
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSImage", "NSImageRep", "NSGraphics"] }
+objc2-pdf-kit = "0.3"
+objc2-vision = "0.3"
+
+[dev-dependencies]
+crc32fast = "1"

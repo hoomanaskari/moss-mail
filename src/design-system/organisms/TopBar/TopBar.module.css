@@ -1,0 +1,45 @@
+/* Every top bar is 54px with its content centred 27px from the top: the macOS traffic-light line. */
+.bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  height: 54px;
+  padding: 0 24px;
+}
+
+.nav {
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Pushes the title to the page gutter so it lines up with the content below. */
+.title {
+  display: flex;
+  align-items: center;
+  padding-left: max(0px, calc(var(--page-gutter) - 24px - var(--window-controls-span)));
+}
+
+.spacer {
+  flex: 1 1 0;
+  align-self: stretch;
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backLabel {
+  color: var(--ink-2);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.back:hover .backLabel {
+  color: var(--ink);
+}

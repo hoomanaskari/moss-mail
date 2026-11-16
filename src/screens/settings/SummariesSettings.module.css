@@ -1,0 +1,26 @@
+.row {
+  gap: 14px;
+  min-height: 56px;
+}
+
+.tile {
+  display: flex;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--raise);
+}
+
+.ai {
+  background: var(--ai-bg);
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 14px;
+}

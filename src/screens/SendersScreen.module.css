@@ -1,0 +1,28 @@
+.scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 24px var(--page-gutter) 28px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.column {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.sub {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.row {
+  height: 56px;
+}
+
+.empty {
+  height: 48px;
+  color: var(--ink-3);
+  font-size: 14px;
+}

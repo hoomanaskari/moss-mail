@@ -1,0 +1,253 @@
+.button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    filter var(--dur-fast) var(--ease);
+}
+
+.label {
+  font-size: 14px;
+}
+
+/* Primary: Send */
+.primary {
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.primary .label {
+  font-weight: 700;
+}
+.primary.lg {
+  gap: 10px;
+  padding: 10px 14px 10px 16px;
+  border-radius: 9px;
+}
+.primary.lg .label {
+  font-size: 15px;
+}
+.primary:hover {
+  filter: brightness(1.08);
+}
+
+/* Outline: Reply, Reply all, Forward, Edit */
+.outline {
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  color: var(--ink);
+}
+.outline .label {
+  font-weight: 600;
+}
+.outline:hover {
+  background: var(--raise);
+}
+
+.ai {
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  outline: 1px solid var(--ai-line);
+  outline-offset: -0.5px;
+  color: var(--ink);
+}
+.ai .label {
+  font-weight: 600;
+}
+.ai:hover {
+  background: var(--ai-bg);
+}
+
+.outline.lg {
+  gap: 10px;
+  padding: 10px 14px 10px 12px;
+  border-radius: 9px;
+}
+.outline.lg .label {
+  font-size: 15px;
+}
+
+/* Secondary: Open ⌘1 beside a setup step */
+.secondary {
+  gap: 8px;
+  padding: 6px 8px 6px 10px;
+  border-radius: 8px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  color: var(--ink);
+}
+.secondary .label {
+  font-weight: 600;
+}
+.secondary:hover {
+  background: var(--raise);
+}
+
+/* Link: Use your own Google OAuth client ⌥A */
+.link {
+  gap: 8px;
+  color: var(--ai);
+}
+.link .label {
+  font-weight: 700;
+}
+.link:hover .label {
+  text-decoration: underline;
+}
+
+/* Small outline: Edit recipients, + CC, + BCC */
+.outlineSm {
+  gap: 8px;
+  padding: 5px 8px 5px 10px;
+  border-radius: 7px;
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  color: var(--ink-2);
+}
+.outlineSm .label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.outlineSm:hover {
+  background: var(--raise);
+}
+
+/* Quiet: the lesser choice beside an outlineSm one (Just this once) */
+.quiet {
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  color: var(--ink-3);
+}
+.quiet .label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.quiet:hover {
+  color: var(--ink-2);
+  background: var(--raise);
+}
+
+/* Toolbar: Attach, Send later, Remind me if no reply */
+.toolbar {
+  gap: 7px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--ink-2);
+}
+.toolbar:hover {
+  background: var(--raise);
+}
+.toolbar.active {
+  background: var(--ai-bg);
+  color: var(--ai-ink);
+}
+.toolbar.active .label {
+  font-weight: 700;
+}
+
+/* Subtle: Discard */
+.subtle {
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--ink-3);
+}
+.subtle:hover {
+  color: var(--ink-2);
+}
+
+/* Mini: Copy, Contact */
+.mini {
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  color: var(--ink-2);
+}
+.mini .label {
+  font-size: 13px;
+}
+
+/* Warn: Attach file inside a warning */
+.warn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  outline: 1px solid var(--due);
+  outline-offset: -0.5px;
+  color: var(--due);
+}
+.warn .label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Choice: instant reply options */
+.choice {
+  padding: 7px 12px;
+  border-radius: 8px;
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  color: var(--ink-2);
+}
+.choice.active {
+  background: var(--raise);
+  outline-color: var(--ai-select);
+  color: var(--ink);
+}
+.choice.active .label {
+  font-weight: 700;
+}
+
+/* On a photo */
+.invert,
+.glass {
+  gap: 10px;
+  padding: 11px 16px;
+  border-radius: 10px;
+}
+.invert .label,
+.glass .label {
+  font-size: 16px;
+}
+.invert {
+  background: var(--invert);
+  color: var(--invert-ink);
+}
+.invert .label {
+  font-weight: 700;
+}
+.glass {
+  background: var(--glass);
+  outline: 1px solid var(--glass-line);
+  outline-offset: -0.5px;
+  color: var(--photo-ink);
+}
+.glass .label {
+  font-weight: 600;
+}
+
+/* Pressed, and while it works: it sinks a little, so the press shows at once. */
+.button:active:not(:disabled),
+.button[aria-busy] {
+  transform: translateY(1px);
+}
+.button[aria-busy] {
+  cursor: progress;
+}
+.primary[aria-busy] {
+  filter: brightness(0.92);
+}
+
+.button:disabled { opacity: 0.45; cursor: default; }

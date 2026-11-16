@@ -1,0 +1,74 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Reading text: larger size, generous line height and a little letter spacing for readability. */
+.paragraph {
+  width: 100%;
+  color: var(--body);
+  font-size: var(--reading-size);
+  letter-spacing: 0.2px;
+  line-height: var(--reading-leading);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.link {
+  color: var(--ai);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.quoted {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-left: 16px;
+  border-left: 2px solid var(--line);
+}
+.quoted .paragraph {
+  color: var(--ink-2);
+}
+
+.trackers {
+  margin-left: 6px;
+  color: var(--ink-3);
+}
+
+.toggle {
+  align-self: flex-start;
+}
+
+.frameWrap {
+  width: 100%;
+}
+
+/*
+ * Designed email (newsletters, receipts) keeps its own layout, drawn for white paper.
+ * The paper stays white in dark mode so those layouts stay readable, unless the email brings its own dark version.
+ */
+.paper {
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: #ffffff;
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  /* The email's own dark-mode styles would fight the white paper. */
+  color-scheme: light;
+}
+
+/* The email's own dark version, drawn on dark paper. */
+.paper.darkPaper {
+  background: var(--surface);
+  color-scheme: dark;
+}
+
+.frame {
+  display: block;
+  width: 100%;
+  border: 0;
+  color-scheme: inherit;
+}

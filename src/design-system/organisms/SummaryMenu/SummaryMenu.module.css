@@ -1,0 +1,83 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 340px;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  box-shadow: 0 8px 24px #00000059;
+}
+
+.head {
+  padding: 8px 10px 6px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  text-align: left;
+}
+
+/* The marked item: where ↑ ↓ are. It starts on the kind shown. */
+.active {
+  background: var(--raise);
+}
+
+/* Pointing at an item is only hinted at; it never moves the mark. */
+.item:not(.active):hover {
+  background: color-mix(in srgb, var(--raise) 45%, transparent);
+}
+
+.words {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.on .label {
+  font-weight: 600;
+}
+
+.sub {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 10px 10px 6px;
+  border-top: 1px solid var(--line);
+}
+
+.private {
+  flex: 1 1 0;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.close {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 13px;
+}

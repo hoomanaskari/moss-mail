@@ -1,0 +1,38 @@
+.anchor {
+  position: relative;
+  display: flex;
+}
+
+.pop {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 8px);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  cursor: auto;
+}
+
+.start {
+  left: 0;
+}
+
+.end {
+  right: 0;
+}
+
+/* Over the page, in the body: placed by the code next to its trigger, never clipped by a card. */
+.floating {
+  z-index: 100;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  cursor: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

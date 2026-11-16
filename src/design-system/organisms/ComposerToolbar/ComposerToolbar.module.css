@@ -1,0 +1,23 @@
+.toolbar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding-top: 12px;
+  box-shadow: inset 0 1px 0 var(--line);
+}
+
+.spacer {
+  flex: 1 1 0;
+}
+
+/* Write with Moss: the AI border, a little tighter than other outlined buttons. */
+.moss {
+  gap: 7px;
+  padding: 7px 10px;
+  margin-right: 4px;
+}
+.toolbar .moss > span {
+  font-weight: 400;
+}

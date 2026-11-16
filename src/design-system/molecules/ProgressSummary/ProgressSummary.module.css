@@ -1,0 +1,41 @@
+.progress {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+button.progress {
+  cursor: pointer;
+}
+
+button.progress:hover .main {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Fixed width (as in design.pen) so the ring doesn't shift when "2 of 8" becomes "10 of 12". */
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 160px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.main {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sub {
+  color: var(--ink-3);
+  font-size: 13px;
+}

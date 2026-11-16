@@ -1,0 +1,64 @@
+.banner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.text {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.why {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding-left: 30px;
+}
+
+/* On the banner's surface the buttons are raised, and their keys sink back. */
+.action {
+  background: var(--raise);
+}
+.action:hover {
+  filter: brightness(1.08);
+}
+.action kbd {
+  background: var(--surface);
+}
+
+/* Everyone at their domain: quieter than Block and Accept, with the same keys plus ⇧. */
+.domain {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: 16px;
+  color: var(--ink-3);
+  font-size: 14px;
+}

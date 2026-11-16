@@ -1,0 +1,63 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 22px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.count {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 4px 0 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.label {
+  flex: 1 1 0;
+  color: var(--ink-2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.now .label {
+  color: var(--ink);
+}
+
+.next .label {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.status {
+  color: var(--ink-3);
+  font-size: 14px;
+  white-space: nowrap;
+}

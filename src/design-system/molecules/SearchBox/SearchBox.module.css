@@ -1,0 +1,47 @@
+.box {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: var(--surface);
+  outline: 1px solid var(--line);
+  outline-offset: -0.5px;
+  cursor: text;
+}
+
+.box:focus-within {
+  outline-color: var(--ai-line);
+}
+
+.input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  appearance: none;
+  color: var(--ink);
+  caret-color: var(--ai);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.input::placeholder {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.count {
+  flex-shrink: 0;
+  color: var(--ink-3);
+  font-size: 14px;
+  white-space: nowrap;
+}

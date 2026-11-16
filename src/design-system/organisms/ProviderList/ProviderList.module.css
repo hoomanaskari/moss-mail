@@ -1,0 +1,23 @@
+.row {
+  height: 64px;
+  cursor: pointer;
+}
+
+.text {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.how {
+  color: var(--ink-3);
+  font-size: 14px;
+}

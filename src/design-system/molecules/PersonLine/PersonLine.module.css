@@ -1,0 +1,41 @@
+.line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+
+.name {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.email {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.spacer {
+  flex: 1 1 0;
+}
+
+/* Kept in the layout but hidden, so rows don't change size on hover. */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin: -2px 0;
+  visibility: hidden;
+}
+
+.line:hover {
+  background: var(--raise);
+}
+
+.line:hover .actions,
+.line:focus-within .actions {
+  visibility: visible;
+}

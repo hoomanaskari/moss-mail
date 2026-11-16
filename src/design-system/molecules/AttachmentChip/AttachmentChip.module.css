@@ -1,0 +1,125 @@
+/* design.pen: "Alt · Attachments" and "Alt · Attachment types". */
+.card {
+  --file-color: var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  width: 176px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
+  background: var(--surface);
+  text-align: left;
+}
+
+.card:hover {
+  outline-color: var(--ink-3);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--ai);
+  outline-offset: -2px;
+}
+
+.card[data-kind="pdf"] { --file-color: var(--red); }
+.card[data-kind="document"] { --file-color: var(--work); }
+.card[data-kind="spreadsheet"] { --file-color: var(--green); }
+.card[data-kind="presentation"] { --file-color: var(--personal); }
+.card[data-kind="archive"] { --file-color: var(--sand); }
+.card[data-kind="image"] { --file-color: var(--sky); }
+.card[data-kind="audio"] { --file-color: var(--violet); }
+.card[data-kind="video"] { --file-color: var(--studio); }
+.card[data-kind="code"] { --file-color: var(--olive); }
+.card[data-kind="calendar"] { --file-color: var(--due); }
+.card[data-kind="text"] { --file-color: var(--ink-2); }
+
+.preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 110px;
+  /* The kind's colour at 14% over the raised surface, as in the design. */
+  background: linear-gradient(color-mix(in srgb, var(--file-color) 14%, transparent), color-mix(in srgb, var(--file-color) 14%, transparent)),
+    var(--raise);
+  color: var(--file-color);
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* A page shows its top, where the title is. */
+  object-position: top;
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--file-color);
+  color: var(--badge-ink);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  line-height: 13px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px 9px;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.size {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+/* A file going with an email being written: a round remove button on its corner.
+   Not in design.pen yet: built from the card and its outline. */
+.removable {
+  position: relative;
+  display: inline-flex;
+}
+
+.remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
+  background: var(--surface);
+  color: var(--ink-2);
+}
+
+.remove:hover {
+  color: var(--ink);
+  outline-color: var(--ink-3);
+}
+
+.remove:focus-visible {
+  outline: 2px solid var(--ai);
+  outline-offset: -2px;
+}

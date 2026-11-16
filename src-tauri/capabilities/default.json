@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions for the main window. Opening files is limited to attachments Moss saved; the file picker only returns paths. The updater can check for, download and install a new Moss, then restart into it.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging",
+    "opener:default",
+    "dialog:allow-open",
+    "updater:default",
+    { "identifier": "opener:allow-open-path", "allow": [{ "path": "$APPCACHE/attachments/**" }] }
+  ]
+}
