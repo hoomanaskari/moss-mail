@@ -2,6 +2,12 @@
 
 **Calm, keyboard-first email with private AI.** Free and open source (MIT).
 
+<p align="center">
+  <a href="https://github.com/hoomanaskari/moss-mail/releases/latest">
+    <img src="https://img.shields.io/badge/Download_for_Mac-DMG-black?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Mac" />
+  </a>
+</p>
+
 Moss is an email client that has AI, not an AI app that reads your email. It's built to be easy on people with dyslexia and ADHD: one clear next step, big readable text, and every shortcut shown on screen. The AI runs on your Mac, so your email stays there.
 
 > **Status: early.** Moss 0.1 is the first public version, for **macOS on Apple silicon** (M1 or newer), macOS 13 or later.
@@ -13,7 +19,7 @@ Moss is an email client that has AI, not an AI app that reads your email. It's b
 2. Open it and drag Moss to Applications.
 3. Open Moss and add your first account.
 
-Moss keeps itself up to date. It looks for a new version every 6 hours and downloads it quietly. When one is ready, the top bar says so, with a **Restart** button. You can also look now: press `⌘K` and choose **Check for updates**.
+Moss keeps itself up to date. It looks for a new version when it opens and every 6 hours. When there is one, **Update to Moss** and its number shows at the top of every screen: click it and Moss downloads it, installs it and restarts. You can also look now: choose **Moss**, then **Check for Updates…** in the menu bar, or press `⌘K` and choose **Check for updates**.
 
 ## What it does
 
