@@ -46,6 +46,18 @@ fn standard(name: &str, update: bool) -> Vec<(String, Vec<String>)> {
     ]
 }
 
+/// Whether `app` has the updater: its builder is there only once the plugin started, with the
+/// update settings from the config. (Not `updater()`, which also needs the path of the program
+/// to have no symlink in it, and a release runs this test from /var, which is one.)
+fn has_updater(app: &tauri::App<MockRuntime>) -> bool {
+    // Asking for a plugin that isn't there panics: quietly here, since that is the point.
+    let hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(|_| {}));
+    let found = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| drop(app.updater_builder()))).is_ok();
+    std::panic::set_hook(hook);
+    found
+}
+
 /// The app as `run` builds it for `flavor`, on the test runtime.
 fn app(flavor: Flavor) -> tauri::App<MockRuntime> {
     let mut context = mock_context(noop_assets());
@@ -59,16 +71,11 @@ fn main() {
     // The whole app, as `run` builds it: the installed Moss has its menu and its updater.
     let production = app(Flavor::Production);
     assert_eq!(layout(&production.menu().unwrap()), standard("Moss", true));
-    assert!(production.updater().is_ok());
+    assert!(has_updater(&production), "the installed Moss has its updater");
     // Moss Dev has neither an update item nor an updater.
     let dev = app(Flavor::Development);
     assert_eq!(layout(&dev.menu().unwrap()), standard("Moss Dev", false));
-    // Asking for a plugin that isn't there panics: quietly here, since that is the point.
-    let hook = std::panic::take_hook();
-    std::panic::set_hook(Box::new(|_| {}));
-    let updater = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| dev.updater().is_ok()));
-    std::panic::set_hook(hook);
-    assert!(!matches!(updater, Ok(true)), "Moss Dev has no updater");
+    assert!(!has_updater(&dev), "Moss Dev has no updater");
 
     let app = mock_builder().build(mock_context(noop_assets())).unwrap();
 
