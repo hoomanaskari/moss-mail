@@ -41,7 +41,10 @@ fi
 [ -f target/moss-release-source.json ] || stop "validated source provenance is missing. Use pnpm release."
 [ ! -e "$OUT" ] || stop "package output already exists in this snapshot."
 echo "Building Moss $VERSION, signed with $APPLE_SIGNING_IDENTITY"
+# tauri.conf.json as it is: never Moss Dev's overlay (tauri.dev.conf.json).
 pnpm tauri build --bundles app --config '{"bundle":{"createUpdaterArtifacts":false,"resources":{"../target/moss-release-source.json":"release-source.json"}}}' -- --locked
+built=$(plutil -extract CFBundleIdentifier raw -o - "$APP/Contents/Info.plist" 2>/dev/null || true)
+[ "$built" = app.moss.mail ] || stop "the build is not the installed Moss (its identifier is ${built:-missing})."
 mkdir -p "$OUT"
 
 notarize() {

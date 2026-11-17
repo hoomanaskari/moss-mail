@@ -4,6 +4,28 @@ import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSy
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyUpdate } from "./release-update";
+const plist=(identifier:string)=>`<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>${identifier}</string></dict></plist>`;
+it.each([["app.moss.mail.dev"],[""]])("refuses to package a build whose identifier is %j",identifier=>{
+ const root=mkdtempSync(join(tmpdir(),"moss-package-test-"));
+ try {
+  for(const dir of ["scripts","bin","docs/releases","src-tauri","target"])mkdirSync(join(root,dir),{recursive:true});
+  for(const name of ["package-release.sh","signing-identity.sh"])copyFileSync(join("scripts",name),join(root,"scripts",name));
+  writeFileSync(join(root,"src-tauri/tauri.conf.json"),JSON.stringify({version:"1.2.3"}));writeFileSync(join(root,"docs/releases/1.2.3.md"),"Notes");writeFileSync(join(root,"key"),"k");
+  writeFileSync(join(root,"target/moss-release-source.json"),"{}");
+  const runner=join(root,"bin/fake-tool");
+  writeFileSync(runner,`#!${process.execPath}
+const fs=require('fs'),path=require('path');const tool=path.basename(process.argv[1]),args=process.argv.slice(2);
+if(tool==='uname')console.log(args[0]==='-m'?'arm64':'Darwin');
+if(tool==='pnpm'&&args.includes('build')){fs.mkdirSync('target/release/bundle/macos/Moss.app/Contents',{recursive:true});if(process.env.ID)fs.writeFileSync('target/release/bundle/macos/Moss.app/Contents/Info.plist',process.env.PLIST);}
+fs.appendFileSync(process.env.TRACE,tool+'\\n');
+`);chmodSync(runner,0o755);
+  for(const tool of ["uname","pnpm","codesign","ditto","create-dmg","tar","gh","xcrun","spctl"])symlinkSync(runner,join(root,"bin",tool));
+  const trace=join(root,"trace");
+  expect(()=>execFileSync("sh",["scripts/package-release.sh","--local"],{cwd:root,stdio:"pipe",env:{...process.env,PATH:`${join(root,"bin")}:${process.env.PATH}`,APPLE_SIGNING_IDENTITY:"synthetic",MOSS_UPDATER_KEY:join(root,"key"),TRACE:trace,ID:identifier,PLIST:plist(identifier)}})).toThrow(/the build is not the installed Moss/);
+  // Stopped before signing, archiving or making the DMG.
+  expect(readFileSync(trace,"utf8").split("\n").filter(Boolean).filter(t=>t!=="uname"&&t!=="xcrun")).toEqual(["pnpm"]);
+ } finally {rmSync(root,{recursive:true,force:true});}
+});
 it.each(["--local", "--production"])("packages %s with locked dependencies and provenance without publishing",mode=>{
  const root=mkdtempSync(join(tmpdir(),"moss-package-test-"));
  try {
@@ -17,7 +39,7 @@ it.each(["--local", "--production"])("packages %s with locked dependencies and p
 const fs=require('fs'),path=require('path');const tool=path.basename(process.argv[1]),args=process.argv.slice(2);
 fs.appendFileSync(process.env.TRACE,JSON.stringify({tool,args})+'\\n');
 if(tool==='uname')console.log(args[0]==='-m'?'arm64':'Darwin');
-if(tool==='pnpm'&&args.includes('build'))fs.mkdirSync('target/release/bundle/macos/Moss.app',{recursive:true});
+if(tool==='pnpm'&&args.includes('build')){fs.mkdirSync('target/release/bundle/macos/Moss.app/Contents',{recursive:true});fs.writeFileSync('target/release/bundle/macos/Moss.app/Contents/Info.plist',process.env.PLIST);}
 if(tool==='pnpm'&&args.includes('sign'))require('child_process').execFileSync(process.execPath,[process.env.REAL_TAURI_CLI,...args.slice(args.indexOf('tauri')+1)],{stdio:'pipe'});
 if(tool==='tar')fs.writeFileSync(args[1],'fixture archive');
 if(tool==='create-dmg')fs.writeFileSync(args.at(-2),'fixture dmg');
@@ -25,10 +47,13 @@ if(tool==='ditto'){if(args.includes('-c'))fs.writeFileSync(args.at(-1),'fixture 
 `);chmodSync(runner,0o755);
   for(const tool of ["uname","pnpm","codesign","ditto","create-dmg","tar","gh","xcrun","spctl"])symlinkSync(runner,join(root,"bin",tool));
   const trace=join(root,"trace.jsonl");
-  execFileSync("sh",["scripts/package-release.sh",mode],{cwd:root,env:{...process.env,PATH:`${join(root,"bin")}:${process.env.PATH}`,APPLE_SIGNING_IDENTITY:"synthetic",MOSS_UPDATER_KEY:join(root,"key"),TRACE:trace,REAL_TAURI_CLI:join(process.cwd(),"node_modules/@tauri-apps/cli/tauri.js")}});
+  execFileSync("sh",["scripts/package-release.sh",mode],{cwd:root,env:{...process.env,PATH:`${join(root,"bin")}:${process.env.PATH}`,APPLE_SIGNING_IDENTITY:"synthetic",MOSS_UPDATER_KEY:join(root,"key"),TRACE:trace,PLIST:plist("app.moss.mail"),REAL_TAURI_CLI:join(process.cwd(),"node_modules/@tauri-apps/cli/tauri.js")}});
   const calls=readFileSync(trace,"utf8").trim().split("\n").map(line=>JSON.parse(line));
   const build=calls.find(c=>c.tool==="pnpm"&&c.args.includes("build"));
   expect(build.args).toContain("--locked");
+  // The installed Moss: one config, inline, and never Moss Dev's overlay.
+  expect(build.args.filter((a:string)=>a==="--config")).toHaveLength(1);
+  expect(build.args.join(" ")).not.toMatch(/tauri\.dev\.conf|app\.moss\.mail\.dev|Moss Dev/);
   const config=JSON.parse(build.args[build.args.indexOf("--config")+1]);
   expect(config.bundle.resources).toEqual({"../target/moss-release-source.json":"release-source.json"});
   expect(calls.some(c=>c.tool==="gh")).toBe(false);

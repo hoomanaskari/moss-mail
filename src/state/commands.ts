@@ -50,6 +50,7 @@ import { dayBefore, dayBeforeDate, remindTime, weekdayOf } from "../lib/time";
 import { splits } from "../data/demo";
 import { whyText } from "../lib/why";
 import { useUpdates } from "./updates";
+import { useAppIdentity } from "../services/appIdentity";
 
 /** The email the palette acts on: the open one, or the one under the cursor. */
 export function contextThread() {
@@ -242,12 +243,15 @@ function moveCommands(q: string): { always: PaletteCommand[]; typed: PaletteComm
 }
 
 /** Moves the email in context to Trash. Only once you ask for it, so it's never picked by accident. */
-/** "Check for updates", or once a new Moss is in, the restart into it. */
-function updateCommand(): PaletteCommand {
+/** "Check for updates" (in the update window), the update the top bar offers, or the restart into it. None in Moss Dev. */
+function updateCommand(): PaletteCommand[] {
+  if (!useAppIdentity.getState().updates) return [];
   const u = useUpdates.getState();
-  return u.update.state === "ready"
-    ? { id: "updates", label: `Restart to update to Moss ${u.update.version}`, icon: RotateCw, run: () => void u.restart() }
-    : { id: "updates", label: "Check for updates", icon: CircleArrowUp, run: () => void u.check(true) };
+  const { update } = u;
+  if (update.state === "ready") return [{ id: "updates", label: `Restart to update to Moss ${update.version}`, icon: RotateCw, run: () => void u.restart() }];
+  if (update.state === "available" || (update.state === "failed" && update.during === "download"))
+    return [{ id: "updates", label: `Update to Moss ${update.version}`, icon: CircleArrowUp, run: () => void u.install() }];
+  return [{ id: "updates", label: "Check for updates", icon: CircleArrowUp, run: () => void u.check({ asked: true, open: true }) }];
 }
 
 function deleteCommand(q: string): PaletteCommand[] {
@@ -287,7 +291,7 @@ export function paletteGroups(q: string): PaletteGroup[] {
     { id: "addresses", label: "Your addresses (send from another address)", icon: AtSign, run: () => s.openSettings("accounts") },
     { id: "agents", label: "Connect your AI agents (MCP)", icon: Plug, run: () => s.openSettings("ai") },
     { id: "shortcuts", label: "Keyboard shortcuts", icon: Keyboard, shortcut: "?", run: () => s.openSettings("keyboard") },
-    updateCommand(),
+    ...updateCommand(),
     {
       id: "theme",
       label: s.theme === "dark" ? "Switch to light theme" : "Switch to dark theme",

@@ -23,6 +23,10 @@ it("the demo can offer a newer Moss, count its download and restart into it", as
   expect(await demo.check()).toBeNull();
 });
 
+it("the demo can say what's new", async () => {
+  expect(await demoUpdates({ next: "0.2.0", notes: "Faster search" }).check()).toEqual({ version: "0.2.0", notes: "Faster search" });
+});
+
 it("installing with nothing found is a mistake the demo reports", async () => {
   await expect(demoUpdates().install(() => {})).rejects.toThrow("No update to install");
 });

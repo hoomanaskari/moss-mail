@@ -8,6 +8,8 @@ import { useSignatures } from "../state/signatures";
 import { useStartup } from "../state/startup";
 import { useStore } from "../state/store";
 import { pristineUpdates, useUpdates } from "../state/updates";
+import { demoUpdates, setUpdates } from "../services/updates";
+import { installedMoss, useAppIdentity } from "../services/appIdentity";
 
 export const person = (name: string, email: string, extra: Partial<Person> = {}): Person => ({
   name,
@@ -104,6 +106,8 @@ export function resetStore(threads: Thread[], accounts: Account[] = [work, perso
   useSignatures.setState(pristineSignatures, true);
   useScheduled.setState(pristineScheduled, true);
   useUpdates.setState(pristineUpdates);
+  setUpdates(demoUpdates());
+  useAppIdentity.setState(installedMoss, true);
   useStartup.setState({ failed: undefined, trying: false });
   useStore.setState(
     { ...pristine, accounts, threads, doneThreads: [], blockedThreads: [], cursorId: threads[0]?.id, themeChoice: "system", theme: "dark", readingSize: "default" },
@@ -119,6 +123,8 @@ export function resetDemoStore() {
   useSignatures.setState(pristineSignatures, true);
   useScheduled.setState(pristineScheduled, true);
   useUpdates.setState(pristineUpdates);
+  setUpdates(demoUpdates());
+  useAppIdentity.setState(installedMoss, true);
   useStartup.setState({ failed: undefined, trying: false });
   useStore.setState({ ...pristine, themeChoice: "system", theme: "dark", readingSize: "default" }, true);
 }

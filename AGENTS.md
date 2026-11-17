@@ -29,13 +29,22 @@ swift test --package-path apple --enable-code-coverage   # the Apple Intelligenc
 ## Before you push or merge
 
 There is no CI server: checks run on this Mac. Run `pnpm check` (typecheck, UI and Rust tests with coverage, then an unsigned app build) and push or merge only when it passes.
-- To try a change in the desktop app, build it with `pnpm app` (signed, so the Keychain doesn't ask again), quit the running Moss and open `target/release/bundle/macos/Moss.app`.
+- To try a change in the desktop app, build **Moss Dev** with `pnpm app` (signed, so the Keychain doesn't ask again), quit any running Moss Dev and open `target/release/bundle/macos/Moss Dev.app`. `pnpm tauri dev` runs Moss Dev too. See "Moss and Moss Dev" below.
 - Before finishing, run coverage and read the "Uncovered Line #s" for every file you touched. Cover them, or be able to say why each one can't be.
 - Lines that may stay uncovered, and only these:
   - React ref guards that can't be null while mounted (`if (!el) return`).
   - `src-tauri` `run()` and `main()`, which launch the desktop window.
   - Anything that needs a real layout engine or GPU and can't be stubbed sensibly.
 - Don't game the number: no tests without assertions, no excluding files to dodge it. Coverage excludes are only tests, `src/test/`, `src/main.tsx`, the demo data, and the few-line entry files in `scripts/` (their logic lives in `scripts/lib/`, which is covered).
+
+## Moss and Moss Dev
+
+There are two apps, and they never share anything:
+
+- **Moss** (`app.moss.mail`) is the installed app in /Applications, which the owner uses every day as their real mail app. Only `pnpm release` makes it.
+- **Moss Dev** (`app.moss.mail.dev`) is what `pnpm app` and `pnpm tauri dev` build: its own name, data folder (`~/Library/Application Support/app.moss.mail.dev`), Keychain items, agent (MCP) port and name, and a Dock icon with a DEV band. It never checks for updates. `src-tauri/tauri.dev.conf.json` lays this over `tauri.conf.json`, which stays the installed Moss's.
+
+Test in Moss Dev and leave the installed Moss alone: don't quit, replace or relaunch it, and don't read or change `~/Library/Application Support/app.moss.mail` or its Keychain items. Moss Dev starts empty. To try it on a copy of your mail, see the README's "Build it yourself". The rules are in `src-tauri/src/identity.rs` and `scripts/lib/identity.ts`; a release refuses any config or build that isn't the installed Moss's.
 
 ## When you're done with a worktree
 
@@ -53,7 +62,7 @@ The same goes for throwaway worktrees you make yourself, e.g. a clean copy to ru
 
 ## Releasing
 
-`pnpm set-version` and `pnpm release`: see [docs/releasing.md](docs/releasing.md). Builds for trying on this Mac (`pnpm app`) skip the update archive, so they don't need the update key.
+`pnpm set-version` and `pnpm release`: see [docs/releasing.md](docs/releasing.md). `pnpm app` builds Moss Dev, which has no updater and no update archive, so it doesn't need the update key.
 
 ## Writing tests
 

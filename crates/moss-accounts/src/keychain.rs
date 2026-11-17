@@ -9,22 +9,34 @@ use std::sync::Arc;
 use keyring_core::{CredentialStore, Error as KeyringError};
 
 use crate::file_store::EncryptedFileStore;
-use crate::secret::{Secret, SecretRef, SecretStore, SecretStoreError};
+use crate::secret::{Secret, SecretRef, SecretStore, SecretStoreError, KEYCHAIN_SERVICE};
 
 /// Secrets in a `keyring-core` credential store. Each secret is one item, stored as JSON.
+///
+/// A reference names Moss's own items with [`KEYCHAIN_SERVICE`]; the store files them under
+/// the running app's identifier instead. For the installed Moss that is the same name, so its
+/// sign-ins stay where they always were. Moss Dev (`app.moss.mail.dev`) has its own items and
+/// can't reach the installed Moss's, even from a copy of its database.
 pub struct KeyringSecretStore {
     store: Arc<CredentialStore>,
+    service: String,
 }
 
 impl KeyringSecretStore {
-    /// Wraps any `keyring-core` store. Tests pass `keyring_core::mock::Store`.
+    /// Wraps any `keyring-core` store, for the installed Moss. Tests pass `keyring_core::mock::Store`.
     pub fn new(store: Arc<CredentialStore>) -> Self {
-        Self { store }
+        Self::for_app(store, KEYCHAIN_SERVICE)
+    }
+
+    /// Wraps `store` for the app whose identifier is `service`.
+    pub fn for_app(store: Arc<CredentialStore>, service: &str) -> Self {
+        Self { store, service: service.into() }
     }
 
     fn entry(&self, key: &SecretRef) -> Result<keyring_core::Entry, SecretStoreError> {
+        let service = if key.service == KEYCHAIN_SERVICE { &self.service } else { &key.service };
         self.store
-            .build(&key.service, &key.account, None)
+            .build(service, &key.account, None)
             .map_err(unavailable)
     }
 }
@@ -71,13 +83,14 @@ pub fn os_keychain() -> Result<Arc<CredentialStore>, SecretStoreError> {
         .map_err(unavailable)
 }
 
-/// The store the app should use: the OS keychain, or an encrypted file in `data_dir`
-/// when there is no keychain (Linux without a Secret Service).
+/// The store the app should use: the OS keychain, with Moss's items filed under `service`
+/// (the running app's identifier), or an encrypted file in `data_dir` when there is no
+/// keychain (Linux without a Secret Service).
 ///
 /// Dev builds always use the file. macOS ties keychain access to the exact binary,
 /// so every `tauri dev` rebuild would ask for the login password again.
-pub fn platform_secret_store(data_dir: &Path) -> Result<Box<dyn SecretStore>, SecretStoreError> {
-    choose_store(cfg!(debug_assertions), cfg!(target_os = "linux"), os_keychain, data_dir)
+pub fn platform_secret_store(data_dir: &Path, service: &str) -> Result<Box<dyn SecretStore>, SecretStoreError> {
+    choose_store(cfg!(debug_assertions), cfg!(target_os = "linux"), os_keychain, data_dir, service)
 }
 
 fn choose_store(
@@ -85,12 +98,13 @@ fn choose_store(
     allow_file_fallback: bool,
     keychain: impl FnOnce() -> Result<Arc<CredentialStore>, SecretStoreError>,
     data_dir: &Path,
+    service: &str,
 ) -> Result<Box<dyn SecretStore>, SecretStoreError> {
     match (!dev_build).then(keychain) {
         Some(Ok(store)) => {
             let dev = data_dir.join(crate::file_store::SECRETS_FILE).exists();
             Ok(Box::new(KeychainFirst {
-                keychain: KeyringSecretStore::new(store),
+                keychain: KeyringSecretStore::for_app(store, service),
                 dev: dev.then(|| EncryptedFileStore::open(data_dir).ok()).flatten(),
             }))
         }
@@ -187,6 +201,44 @@ mod tests {
         store.delete(&key()).unwrap();
     }
 
+    /// The JSON in the keychain item at `service`, `account`, if there is one.
+    fn filed(mock: &mock::Store, service: &str, account: &str) -> Option<String> {
+        mock.build(service, account, None).unwrap().get_password().ok()
+    }
+
+    #[test]
+    fn production_files_its_items_under_app_moss_mail_byte_for_byte() {
+        // The sign-ins the installed Moss saved keep working: same service, same account.
+        assert_eq!(KEYCHAIN_SERVICE, "app.moss.mail");
+        let mock = mock::Store::new().unwrap();
+        let production = KeyringSecretStore::for_app(mock.clone(), "app.moss.mail");
+        production.save(&key(), &Secret::ApiKey { key: "p".into() }).unwrap();
+        assert_eq!(filed(&mock, "app.moss.mail", &key().account).as_deref(), Some(r#"{"type":"apiKey","key":"p"}"#));
+        assert_eq!(filed(&mock, "app.moss.mail.dev", &key().account), None);
+        // `new` is the production store.
+        assert_eq!(KeyringSecretStore::new(mock.clone()).load(&key()).unwrap(), Some(Secret::ApiKey { key: "p".into() }));
+    }
+
+    #[test]
+    fn moss_dev_files_its_items_under_its_own_service_and_never_reaches_production() {
+        let mock = mock::Store::new().unwrap();
+        let production = KeyringSecretStore::for_app(mock.clone(), "app.moss.mail");
+        let dev = KeyringSecretStore::for_app(mock.clone(), "app.moss.mail.dev");
+        let (theirs, ours) = (Secret::ApiKey { key: "production".into() }, Secret::ApiKey { key: "dev".into() });
+        production.save(&key(), &theirs).unwrap();
+        // The same reference, as a copied production database would hold it.
+        assert_eq!(dev.load(&key()).unwrap(), None, "Moss Dev can't read production's sign-in");
+        dev.save(&key(), &ours).unwrap();
+        assert_eq!(filed(&mock, "app.moss.mail.dev", &key().account).as_deref(), Some(r#"{"type":"apiKey","key":"dev"}"#));
+        dev.delete(&key()).unwrap();
+        assert_eq!(production.load(&key()).unwrap(), Some(theirs), "nor change or delete it");
+        assert_eq!(dev.load(&key()).unwrap(), None);
+        // A reference that names another service is filed where it says, in either app.
+        let other = SecretRef { service: "app.moss.fixture".into(), account: "fixture".into() };
+        dev.save(&other, &ours).unwrap();
+        assert!(filed(&mock, "app.moss.fixture", "fixture").is_some());
+    }
+
     #[test]
     fn keychain_failures_become_unavailable() {
         let (mock, store) = store();
@@ -241,7 +293,7 @@ mod tests {
     fn uses_the_keychain_when_there_is_one() {
         let dir = tempfile::tempdir().unwrap();
         let mock: Arc<CredentialStore> = mock::Store::new().unwrap();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock.clone()), dir.path(), KEYCHAIN_SERVICE).unwrap();
         chosen
             .save(&key(), &Secret::ApiKey { key: "k".into() })
             .unwrap();
@@ -249,12 +301,17 @@ mod tests {
             std::fs::read_dir(dir.path()).unwrap().next().is_none(),
             "no file written"
         );
+        // Moss Dev's store files under its own service.
+        let dev = choose_store(false, false, || Ok(mock.clone()), dir.path(), "app.moss.mail.dev").unwrap();
+        assert_eq!(dev.load(&key()).unwrap(), None);
+        dev.save(&key(), &Secret::ApiKey { key: "d".into() }).unwrap();
+        assert_eq!(chosen.load(&key()).unwrap(), Some(Secret::ApiKey { key: "k".into() }));
     }
 
     #[test]
     fn release_keychain_failure_does_not_create_a_weaker_secret_store() {
         let dir = tempfile::tempdir().unwrap();
-        let result = choose_store(false, false, || Err(SecretStoreError::Unavailable("keychain unavailable".into())), dir.path());
+        let result = choose_store(false, false, || Err(SecretStoreError::Unavailable("keychain unavailable".into())), dir.path(), KEYCHAIN_SERVICE);
         assert!(matches!(result, Err(SecretStoreError::Unavailable(_))));
         assert_eq!(std::fs::read_dir(dir.path()).unwrap().count(), 0);
     }
@@ -268,7 +325,7 @@ mod tests {
         file.save(&key(), &secret).unwrap();
         file.save(&other, &secret).unwrap();
         let (mock, keychain) = store();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock), dir.path(), KEYCHAIN_SERVICE).unwrap();
         assert_eq!(chosen.load(&key()).unwrap(), Some(secret.clone()));
         assert_eq!(keychain.load(&key()).unwrap(), Some(secret.clone()));
         assert_eq!(file.load(&key()).unwrap(), None);
@@ -279,17 +336,17 @@ mod tests {
     fn falls_back_to_an_encrypted_file_without_a_keychain() {
         let dir = tempfile::tempdir().unwrap();
         let none = || Err(SecretStoreError::Unavailable("no Secret Service".into()));
-        let chosen = choose_store(false, true, none, dir.path()).unwrap();
+        let chosen = choose_store(false, true, none, dir.path(), KEYCHAIN_SERVICE).unwrap();
         chosen
             .save(&key(), &Secret::ApiKey { key: "k".into() })
             .unwrap();
         assert!(dir.path().join(crate::file_store::SECRETS_FILE).exists());
         let blocked = tempfile::NamedTempFile::new().unwrap();
         assert!(
-            choose_store(false, true, none, blocked.path()).is_err(),
+            choose_store(false, true, none, blocked.path(), KEYCHAIN_SERVICE).is_err(),
             "data dir is a file"
         );
-        let _ = platform_secret_store(dir.path()).unwrap();
+        let _ = platform_secret_store(dir.path(), KEYCHAIN_SERVICE).unwrap();
     }
 
     #[test]
@@ -302,6 +359,7 @@ mod tests {
             false,
             || panic!("a dev build opened the keychain"),
             dir.path(),
+            KEYCHAIN_SERVICE,
         )
         .unwrap();
         chosen
@@ -321,7 +379,7 @@ mod tests {
             .save(&key(), &dev)
             .unwrap();
         let (mock, keychain) = store();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock), dir.path(), KEYCHAIN_SERVICE).unwrap();
         assert_eq!(chosen.load(&key()).unwrap(), Some(dev.clone()));
         assert_eq!(keychain.load(&key()).unwrap(), Some(dev), "copied into the keychain");
         // From then on the keychain has the last word.
@@ -341,13 +399,13 @@ mod tests {
         EncryptedFileStore::open(dir.path()).unwrap();
         std::fs::write(dir.path().join(crate::file_store::SECRETS_FILE), b"x").unwrap();
         let (mock, _) = store();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock), dir.path(), KEYCHAIN_SERVICE).unwrap();
         assert_eq!(chosen.load(&key()).unwrap(), None);
         assert!(chosen.delete(&key()).is_err(), "a damaged fallback cannot confirm deletion");
         // A damaged key: the file can't even be opened.
         std::fs::write(dir.path().join(crate::file_store::KEY_FILE), b"x").unwrap();
         let (mock, _) = store();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock), dir.path(), KEYCHAIN_SERVICE).unwrap();
         assert_eq!(chosen.load(&key()).unwrap(), None);
     }
 
@@ -385,7 +443,7 @@ mod tests {
         file.save(&key(), &old).unwrap();
         let (mock, keychain) = store();
         keychain.save(&key(), &new).unwrap();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock), dir.path(), KEYCHAIN_SERVICE).unwrap();
         assert_eq!(chosen.load(&key()).unwrap(), Some(new));
         assert_eq!(file.load(&key()).unwrap(), Some(old));
     }
@@ -396,7 +454,7 @@ mod tests {
         let secret = Secret::ApiKey { key: "fixture".into() };
         EncryptedFileStore::open(dir.path()).unwrap().save(&key(), &secret).unwrap();
         let (mock, _) = store();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock), dir.path(), KEYCHAIN_SERVICE).unwrap();
         std::fs::write(dir.path().join(crate::file_store::SECRETS_FILE), b"damaged").unwrap();
         chosen.save(&key(), &secret).unwrap();
         assert_eq!(chosen.load(&key()).unwrap(), Some(secret));
@@ -411,7 +469,7 @@ mod tests {
         file.save(&key(), &secret).unwrap();
         let (mock, keychain) = store();
         keychain.save(&key(), &secret).unwrap();
-        let chosen = choose_store(false, false, || Ok(mock), dir.path()).unwrap();
+        let chosen = choose_store(false, false, || Ok(mock), dir.path(), KEYCHAIN_SERVICE).unwrap();
         // Force the atomic replacement to fail without changing filesystem permissions.
         std::fs::create_dir(dir.path().join("secrets.bin.tmp")).unwrap();
         assert!(chosen.delete(&key()).is_err());

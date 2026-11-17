@@ -6,6 +6,8 @@
 
 use serde::Deserialize;
 
+use crate::identity::Flavor;
+
 /// The Dock icon: the Mac's own choice, or one look whatever the Mac is in.
 #[derive(Clone, Copy, Debug, PartialEq, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -15,21 +17,24 @@ pub enum AppIcon {
     Dark,
 }
 
-/// The picture for `icon`, drawn by `scripts/app-icon.sh --dock` from `icons/Moss.icon`; none
-/// for the Mac's own.
-pub fn png(icon: AppIcon) -> Option<&'static [u8]> {
-    match icon {
-        AppIcon::System => None,
-        AppIcon::Light => Some(include_bytes!("../icons/dock-light.png")),
-        AppIcon::Dark => Some(include_bytes!("../icons/dock-dark.png")),
+/// The picture for `icon` in `flavor`, drawn by `scripts/app-icon.sh --dock` from
+/// `icons/Moss.icon` (Moss Dev's, with its DEV band, by `scripts/dev-icon.sh`); none for the
+/// Mac's own.
+pub fn png(icon: AppIcon, flavor: Flavor) -> Option<&'static [u8]> {
+    match (icon, flavor) {
+        (AppIcon::System, _) => None,
+        (AppIcon::Light, Flavor::Production) => Some(include_bytes!("../icons/dock-light.png")),
+        (AppIcon::Dark, Flavor::Production) => Some(include_bytes!("../icons/dock-dark.png")),
+        (AppIcon::Light, Flavor::Development) => Some(include_bytes!("../icons/dev/dock-light.png")),
+        (AppIcon::Dark, Flavor::Development) => Some(include_bytes!("../icons/dev/dock-dark.png")),
     }
 }
 
 /// Shows `icon` in the Dock while Moss runs. (Not async, so Tauri runs it on the main thread,
 /// where AppKit wants it.)
 #[tauri::command]
-pub fn set_app_icon(icon: AppIcon) {
-    show(png(icon));
+pub fn set_app_icon<R: tauri::Runtime>(app: tauri::AppHandle<R>, icon: AppIcon) {
+    show(png(icon, Flavor::of(&app.config().identifier)));
 }
 
 /// Gives the Dock icon back to the Mac.
@@ -79,25 +84,38 @@ mod tests {
         assert!(icon("blue").is_err());
     }
 
+    const FLAVORS: [Flavor; 2] = [Flavor::Production, Flavor::Development];
+
     #[test]
     fn light_and_dark_have_their_own_dock_pictures() {
-        let light = png(AppIcon::Light).unwrap();
-        let dark = png(AppIcon::Dark).unwrap();
-        assert_eq!(size(light), (512, 512));
-        assert_eq!(size(dark), (512, 512));
-        assert_ne!(light, dark);
+        for flavor in FLAVORS {
+            let light = png(AppIcon::Light, flavor).unwrap();
+            let dark = png(AppIcon::Dark, flavor).unwrap();
+            assert_eq!(size(light), (512, 512));
+            assert_eq!(size(dark), (512, 512));
+            assert_ne!(light, dark);
+        }
+    }
+
+    #[test]
+    fn moss_dev_never_shows_the_installed_moss_s_dock_picture() {
+        for icon in [AppIcon::Light, AppIcon::Dark] {
+            assert_ne!(png(icon, Flavor::Development), png(icon, Flavor::Production));
+        }
     }
 
     #[test]
     fn the_macs_own_icon_needs_no_picture() {
-        assert_eq!(png(AppIcon::System), None);
+        for flavor in FLAVORS {
+            assert_eq!(png(AppIcon::System, flavor), None);
+        }
     }
 
     #[cfg(target_os = "macos")]
     #[test]
     fn appkit_reads_the_dock_pictures() {
-        for icon in [AppIcon::Light, AppIcon::Dark] {
-            let size = image(png(icon)).unwrap().size();
+        for (icon, flavor) in [AppIcon::Light, AppIcon::Dark].into_iter().flat_map(|i| FLAVORS.map(|f| (i, f))) {
+            let size = image(png(icon, flavor)).unwrap().size();
             assert_eq!((size.width, size.height), (512.0, 512.0));
         }
         assert!(image(None).is_none());
@@ -107,7 +125,8 @@ mod tests {
     #[test]
     fn changing_the_icon_off_the_main_thread_does_nothing() {
         // Tests run off the main thread, where there is no Dock to change: nothing panics.
-        set_app_icon(AppIcon::Dark);
+        let app = tauri::test::mock_app();
+        set_app_icon(app.handle().clone(), AppIcon::Dark);
         reset();
     }
 }

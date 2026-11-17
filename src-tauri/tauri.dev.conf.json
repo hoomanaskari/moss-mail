@@ -1,0 +1,35 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Moss Dev",
+  "identifier": "app.moss.mail.dev",
+  "build": {
+    "beforeBundleCommand": "sh scripts/app-icon.sh --dev"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Moss Dev",
+        "width": 1440,
+        "height": 1024,
+        "minWidth": 960,
+        "minHeight": 640,
+        "center": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": { "x": 24, "y": 29 }
+      }
+    ]
+  },
+  "bundle": {
+    "icon": ["icons/dev/32x32.png", "icons/dev/128x128.png", "icons/dev/128x128@2x.png", "icons/dev/icon.icns"],
+    "macOS": {
+      "files": { "Resources/Assets.car": "gen/icon-dev/Assets.car" }
+    },
+    "createUpdaterArtifacts": false
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": []
+    }
+  }
+}

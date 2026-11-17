@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { TopBar } from "./TopBar";
+import { TopBar, TopBarStatus } from "./TopBar";
 
 describe("TopBar", () => {
   it("is a window drag handle with the traffic lights hidden from screen readers", () => {
@@ -18,6 +18,16 @@ describe("TopBar", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
     // Traffic lights plus the drag spacer only.
     expect(screen.getByRole("banner").children).toHaveLength(2);
+  });
+
+  it("shows what the app puts in every top bar before the screen's own items", () => {
+    render(
+      <TopBarStatus.Provider value={<span>Update to Moss 0.2.0</span>}>
+        <TopBar right={<span>Screen item</span>} />
+      </TopBarStatus.Provider>,
+    );
+    const bar = screen.getByRole("banner");
+    expect(bar).toHaveTextContent(/Update to Moss 0\.2\.0Screen item$/);
   });
 
   it("shows the title in a draggable area", () => {

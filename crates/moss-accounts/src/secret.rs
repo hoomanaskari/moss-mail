@@ -10,7 +10,9 @@ use std::sync::Mutex;
 
 use serde::{Deserialize, Serialize};
 
-/// Keychain service name for every Moss item. Matches the app's bundle identifier.
+/// The service every Moss item is named with in a [`SecretRef`]: the installed Moss's bundle
+/// identifier, which is also where it keeps them in the Keychain. Another Moss (Moss Dev) keeps
+/// its items under its own identifier: see [`crate::KeyringSecretStore::for_app`].
 pub const KEYCHAIN_SERVICE: &str = "app.moss.mail";
 
 /// Names a secret in the keychain. Safe to store and show: it holds no secret itself.

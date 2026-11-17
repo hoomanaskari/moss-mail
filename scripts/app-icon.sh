@@ -9,15 +9,23 @@
 #   sh scripts/app-icon.sh --dock   also redraws icons/dock-light.png and icons/dock-dark.png, the
 #                                   Dock icons Moss shows when its own theme differs from the
 #                                   Mac's. Run it after changing Moss.icon, and commit them.
+#   sh scripts/app-icon.sh --dev    compiles Moss Dev's icon, icons/dev/Moss.icon (drawn by
+#                                   scripts/dev-icon.sh), into src-tauri/gen/icon-dev/Assets.car
+#                                   instead: tauri.dev.conf.json runs this before it bundles.
 set -e
 [ "$(uname)" = Darwin ] || exit 0
 
 root=$(cd "$(dirname "$0")/.." && pwd)
 icons="$root/src-tauri/icons"
 out="$root/src-tauri/gen/icon"
+source="$icons/Moss.icon"
+if [ "$1" = --dev ]; then
+  source="$icons/dev/Moss.icon"
+  out="$root/src-tauri/gen/icon-dev"
+fi
 mkdir -p "$out"
 
-xcrun actool "$icons/Moss.icon" --compile "$out" --platform macosx \
+xcrun actool "$source" --compile "$out" --platform macosx \
   --minimum-deployment-target 11.0 --app-icon Moss \
   --output-partial-info-plist "$out/partial.plist" --errors --warnings >/dev/null
 

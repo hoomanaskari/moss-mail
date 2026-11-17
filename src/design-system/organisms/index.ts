@@ -34,7 +34,7 @@ export { RemindMenu } from "./RemindMenu/RemindMenu";
 export { ThreadActions } from "./ThreadActions/ThreadActions";
 export { ThreadHeader } from "./ThreadHeader/ThreadHeader";
 export { ThreadList } from "./ThreadList/ThreadList";
-export { TopBar } from "./TopBar/TopBar";
+export { TopBar, TopBarStatus } from "./TopBar/TopBar";
 export { FromMenu } from "./FromMenu/FromMenu";
 export { AddressBar } from "./AddressBar/AddressBar";
 export { SummaryMenu, kindChoices } from "./SummaryMenu/SummaryMenu";

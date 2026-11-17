@@ -9,9 +9,11 @@ mod backups;
 mod crash_log;
 mod ask;
 mod frame;
+pub mod identity;
 mod leftovers;
 mod links;
 pub mod mcp;
+pub mod menu;
 mod outbox;
 pub mod power;
 mod private_directory;
@@ -965,19 +967,18 @@ pub fn tls_roots(ca_file: Option<&Path>) -> TlsRoots {
     }
 }
 
-/// Where Moss keeps its database: the app-data folder, or in a debug build only, the folder
-/// in `MOSS_DATA_DIR` (so an end-to-end test never touches your real mail).
-pub fn data_dir(app_data: std::path::PathBuf, override_dir: Option<&Path>) -> std::path::PathBuf {
-    match override_dir.filter(|_| cfg!(debug_assertions)) {
-        Some(dir) => dir.to_path_buf(),
-        None => app_data,
-    }
+/// Where this Moss keeps its database: its app-data folder, or for Moss Dev and debug builds,
+/// the folder in `MOSS_DATA_DIR` (so a test or a try never touches your real mail). See
+/// [`identity::data_dir`].
+pub fn data_dir<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<PathBuf> {
+    let flavor = identity::Flavor::of(&app.config().identifier);
+    let custom = std::env::var_os("MOSS_DATA_DIR").map(PathBuf::from);
+    Ok(identity::data_dir(flavor, app.path().app_data_dir()?, custom.as_deref(), cfg!(debug_assertions)))
 }
 
 /// The file Moss saves its window's size and place in, beside its database.
 fn window_file<R: Runtime>(app: &tauri::AppHandle<R>) -> Option<std::path::PathBuf> {
-    let custom = std::env::var_os("MOSS_DATA_DIR").map(std::path::PathBuf::from);
-    Some(data_dir(app.path().app_data_dir().ok()?, custom.as_deref()).join("window.json"))
+    Some(data_dir(app).ok()?.join("window.json"))
 }
 
 /// The mail database's file name in the data folder.
@@ -1013,6 +1014,7 @@ pub fn with_commands<R: Runtime>(builder: tauri::Builder<R>) -> tauri::Builder<R
         .manage(backups::Backups::default())
         .invoke_handler(tauri::generate_handler![
         app_info,
+        identity::app_identity,
         quit_gate::quit_ready,
         quit_gate::quit_blocked,
         quit_gate::quit_cancel,
@@ -1140,31 +1142,42 @@ pub fn with_commands<R: Runtime>(builder: tauri::Builder<R>) -> tauri::Builder<R
     ])
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    with_commands(tauri::Builder::default())
+/// `builder` as the app for `flavor`: its plugins, commands and menu bar. `run` adds the start.
+/// (`tests/menu.rs` builds it, as AppKit makes menus on the main thread only.)
+pub fn app_builder<R: Runtime>(builder: tauri::Builder<R>, flavor: identity::Flavor) -> tauri::Builder<R> {
+    let builder = with_commands(builder)
         .plugin(tauri_plugin_opener::init())
         // The composer's Attach opens the system file picker.
         .plugin(tauri_plugin_dialog::init())
-        // New versions from GitHub Releases, checked against Moss's update key; then a restart.
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(frame::plugin(window_file))
-        .setup(|app| {
+        .menu(move |app| menu::build(app, flavor))
+        .on_menu_event(|app, event| menu::on_event(app, event.id()));
+    // New versions from GitHub Releases, checked against Moss's update key; then a restart.
+    // Moss Dev has no updater at all.
+    if flavor.updates() { builder.plugin(tauri_plugin_updater::Builder::new().build()) } else { builder }
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    let mut context = tauri::generate_context!();
+    let flavor = identity::settle(context.config_mut(), cfg!(debug_assertions));
+    app_builder(tauri::Builder::default(), flavor)
+        .setup(move |app| {
             use tauri_plugin_dialog::DialogExt;
             let handle = app.handle().clone();
             app.manage(backups::BackupDialog(Box::new(move |selected| {
                 handle.dialog().file().set_title("Save recovery archive")
-                    .set_file_name("Moss recovery.moss-backup")
+                    .set_file_name(flavor.backup_name())
                     .add_filter("Moss recovery archive", &["moss-backup"])
                     .save_file(move |file| selected(file.map(|file| file.into_path()
                         .map_err(|_| "The archive destination could not be selected.".to_string())).transpose()));
             })));
-            let custom = std::env::var_os("MOSS_DATA_DIR").map(std::path::PathBuf::from);
-            let dir = data_dir(app.path().app_data_dir()?, custom.as_deref());
+            let dir = data_dir(app.handle())?;
             crash_log::install(dir.join(crash_log::FILE));
             let ca = std::env::var_os("MOSS_TLS_CA").map(std::path::PathBuf::from);
             let events = Arc::new(WindowEvents(app.handle().clone()));
-            let (secrets, engine) = match startup::open(&dir, private_directory::secrets, events.clone(), tls_roots(ca.as_deref())) {
+            let secrets = |path: &Path| private_directory::secrets(path, flavor.keychain_service());
+            let (secrets, engine) = match startup::open(&dir, secrets, events.clone(), tls_roots(ca.as_deref())) {
                 Ok(opened) => opened,
                 Err(failure) => {
                     // Say why, then quit with an error instead of not appearing at all. The
@@ -1180,7 +1193,7 @@ pub fn run() {
                 }
             };
             // Your own agents: off until you turn it on in Settings → AI.
-            let agents = mcp::start(mcp::mcp(&engine, events.clone(), secrets, &dir, moss_mcp::PORT));
+            let agents = mcp::start(mcp::mcp(&engine, events.clone(), secrets, &dir, flavor.mcp_port()));
             let actions = ask::actions(&engine, events, &dir);
             let runtime = std::env::var_os("MOSS_LLAMA_SERVER").map(std::path::PathBuf::from);
             let on_status = ai_events(app.handle().clone(), engine.clone());
@@ -1234,7 +1247,7 @@ pub fn run() {
             app.manage(agents);
             Ok(())
         })
-        .build(tauri::generate_context!())
+        .build(context)
         .expect("error while running Moss")
         .run(on_run_event);
 }
@@ -1339,17 +1352,16 @@ mod tests {
     }
 
     #[test]
-    fn a_debug_build_can_keep_its_data_elsewhere() {
-        let app = std::path::PathBuf::from("/app");
-        assert_eq!(data_dir(app.clone(), Some(Path::new("/tmp/moss"))), Path::new("/tmp/moss"));
-        assert_eq!(data_dir(app.clone(), None), app);
-    }
-
-    #[test]
-    fn the_window_frame_is_saved_beside_the_database() {
-        let app = mock_builder().build(mock_context(noop_assets())).unwrap();
-        let file = window_file(app.handle()).unwrap();
-        assert_eq!(file.file_name().unwrap(), "window.json");
+    fn each_moss_keeps_its_data_in_a_folder_named_after_it() {
+        for (identifier, folder) in [("app.moss.mail", "app.moss.mail"), ("app.moss.mail.dev", "app.moss.mail.dev")] {
+            let mut context = mock_context(noop_assets());
+            context.config_mut().identifier = identifier.into();
+            let app = mock_builder().build(context).unwrap();
+            let dir = data_dir(app.handle()).unwrap();
+            // MOSS_DATA_DIR is for tests run by hand; none is set here.
+            assert_eq!(dir.file_name().unwrap(), folder);
+            assert_eq!(window_file(app.handle()).unwrap(), dir.join("window.json"));
+        }
     }
 
     struct App {
@@ -1552,13 +1564,27 @@ mod tests {
         let revision = store.block_change("work", refused, 0, moss_store::ChangeFailure::Refused).unwrap();
         let later = store.queue_change("work", "later", 2).unwrap();
         let args = |revision: i64| json!({"account":"work", "change":refused.to_hex(), "revision":revision});
+        // Retry and Discard each start the account's sender in the background. It reports
+        // how its attempt ended with a sync error (these changes can't be read, so each is
+        // blocked in turn); waiting for that keeps the test from racing it for the queue.
+        let (tx, attempts) = std::sync::mpsc::channel();
+        a.app.listen(EVENT, move |e| {
+            let event: Value = serde_json::from_str(e.payload()).unwrap();
+            if event["type"] == "syncError" && event["accountId"] == "work" { let _ = tx.send(()); }
+        });
+        let attempted = || attempts.recv_timeout(std::time::Duration::from_secs(10)).expect("the sender's attempt ends");
         assert_eq!(a.kind("retry_server_change", args(revision + 1)), "invalid");
         assert_eq!(a.kind("discard_server_change", json!({"account":"work", "change":"not a change", "revision":revision})), "invalid");
         assert_eq!(a.call("retry_server_change", args(revision)).unwrap(), Value::Null);
+        // Tried again at once, as asked: still unreadable, so blocked again, at a newer revision.
+        attempted();
         let head = store.earliest_change("work").unwrap().unwrap();
-        assert_eq!((head.id, head.failure), (refused, None));
-        let revision = store.block_change("work", refused, head.revision, moss_store::ChangeFailure::Refused).unwrap();
-        assert_eq!(a.call("discard_server_change", args(revision)).unwrap(), Value::Null);
+        assert_eq!((head.id, head.failure), (refused, Some(moss_store::ChangeFailure::Unreadable)));
+        assert!(head.revision > revision);
+        assert_eq!(a.kind("discard_server_change", args(revision)), "invalid", "only as the window last saw it");
+        assert_eq!(a.call("discard_server_change", args(head.revision)).unwrap(), Value::Null);
+        // The later change gets its turn.
+        attempted();
         assert_eq!(store.pending_changes("work").unwrap(), [(later, "later".into())]);
 
         let refused = a.call("remove_account", json!({"id":"work"})).unwrap_err();
@@ -2012,6 +2038,14 @@ mod tests {
         assert_eq!(a.call("set_app_icon", json!({"icon": "dark"})).unwrap(), Value::Null);
         assert_eq!(a.call("set_app_icon", json!({"icon": "system"})).unwrap(), Value::Null);
         assert!(a.call("set_app_icon", json!({"icon": "blue"})).is_err());
+    }
+
+    #[test]
+    fn the_window_asks_which_moss_it_is() {
+        // The test app's identifier isn't production's, so it is Moss Dev.
+        let a = app();
+        let identity = a.call("app_identity", json!({})).unwrap();
+        assert_eq!(identity, json!({"name": "Moss Dev", "dev": true, "updates": false, "agentName": "moss-dev"}));
     }
 
     #[test]

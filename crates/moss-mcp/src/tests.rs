@@ -348,6 +348,36 @@ async fn a_taken_port_gives_another_one_kept_from_then_on() {
     assert_eq!(url, super::url(saved["port"].as_u64().unwrap() as u16));
 }
 
+#[test]
+fn moss_dev_never_takes_the_installed_moss_s_port() {
+    // The installed Moss asks for its saved port, or PORT.
+    assert_eq!(first_port(None, PORT), PORT);
+    assert_eq!(first_port(Some(51_000), PORT), 51_000);
+    assert_eq!(first_port(Some(PORT), PORT), PORT);
+    // Moss Dev asks for DEV_PORT, and a saved PORT (copied with production's data) is not its own.
+    assert_ne!(DEV_PORT, PORT);
+    assert_eq!(first_port(None, DEV_PORT), DEV_PORT);
+    assert_eq!(first_port(Some(PORT), DEV_PORT), DEV_PORT);
+    assert_eq!(first_port(Some(51_000), DEV_PORT), 51_000);
+}
+
+#[tokio::test]
+async fn a_saved_production_port_is_left_to_production() {
+    let s = setup();
+    std::fs::write(s.dir.path().join(SETTINGS_FILE), format!(r#"{{"on":true,"port":{PORT}}}"#)).unwrap();
+    let mcp = Mcp::new(McpParts {
+        engine: s.engine.clone(),
+        events: s.heard.clone(),
+        secrets: s.secrets.clone(),
+        dir: s.dir.path().into(),
+        port: 0,
+        clock: now,
+    });
+    let url = mcp.restore().await.unwrap().url.unwrap();
+    assert_ne!(url, super::url(PORT));
+    mcp.stop().await;
+}
+
 #[tokio::test]
 async fn only_the_token_gets_in_and_never_a_web_page() {
     let s = setup();

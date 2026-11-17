@@ -17,7 +17,6 @@ import { syncProblemLabel, useSync } from "../services/live";
 import { mail } from "../services/mail";
 import styles from "./InboxScreen.module.css";
 import { AiProgress } from "./AiProgress";
-import { UpdateNotice } from "./UpdateNotice";
 import { ServerChangesNotice } from "./ServerChangesNotice";
 
 /** What each split holds, shown when it's empty. `title` is completed with " in Work" when filtered. */
@@ -98,7 +97,6 @@ export function InboxScreen() {
           title={<PageTitle>{filter === "all" ? "Inbox" : `${accountFor(filter).name} inbox`}</PageTitle>}
           right={
             <>
-              <UpdateNotice />
               <AiProgress />
               <RefreshButton onRefresh={() => void mail().syncNow()} />
               <CommandHint onOpen={() => s.setPaletteOpen(true)} />

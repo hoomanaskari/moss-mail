@@ -20,6 +20,10 @@ import { StartupError } from "./screens/StartupError";
 import { UndoToast } from "./screens/UndoToast";
 import { AskSide } from "./screens/AskSide";
 import { AppFrameSide } from "./design-system/templates";
+import { TopBarStatus } from "./design-system/organisms";
+import { AppStatus } from "./screens/AppStatus";
+import { UpdateDialog } from "./screens/UpdateDialog";
+import { useAppIdentity } from "./services/appIdentity";
 import { useAskPanel, watchAsk } from "./state/askPanel";
 import { useAiSettings, watchAi } from "./state/aiSettings";
 import { contextThread, paletteGroups } from "./state/commands";
@@ -61,6 +65,7 @@ function MailApp() {
   // Only the subject: typing the body mustn't redraw the whole app.
   const composing = useStore((s) => s.draft?.subject);
   const sendLaterSubject = (picking?.kind === "move" ? moving : composing)?.trim() || "No subject";
+  const name = useAppIdentity((i) => i.name);
   usePreferences();
   useAppIcon();
   useShortcuts();
@@ -88,10 +93,11 @@ function MailApp() {
   }, [view, storedView]);
 
   useEffect(() => {
-    document.title = view === "zero" ? "Moss · Inbox zero" : "Moss";
-  }, [view]);
+    document.title = view === "zero" ? `${name} · Inbox zero` : name;
+  }, [view, name]);
 
   return (
+    <TopBarStatus.Provider value={<AppStatus />}>
     <AppFrameSide.Provider value={askOpen && askBeside(view) ? <AskSide /> : null}>
       <ScreenErrorBoundary key={view} onRecover={() => useStore.setState({ view: "inbox", paletteOpen: false })}>
         {view === "inbox" && <InboxScreen />}
@@ -137,7 +143,9 @@ function MailApp() {
           onClose={() => setPaletteOpen(false)}
         />
       )}
+      <UpdateDialog />
       <QuitDialog />
     </AppFrameSide.Provider>
+    </TopBarStatus.Provider>
   );
 }

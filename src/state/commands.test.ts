@@ -8,6 +8,7 @@ import { resetAskPanel, turnsOf, useAskPanel } from "./askPanel";
 import { useSearch } from "./search";
 import { useStore } from "./store";
 import { pristineUpdates, useUpdates } from "./updates";
+import { installedMoss, mossDev, useAppIdentity } from "../services/appIdentity";
 
 const s = () => useStore.getState();
 const items = (q: string, title: string) => paletteGroups(q).find((g) => g.title === title)!.items;
@@ -142,19 +143,35 @@ describe("paletteGroups", () => {
     expect(group("delete", "Commands")).not.toContain("delete");
   });
 
-  it("checks for updates when asked, and restarts into one that's ready", () => {
+  it("checks for updates in the update window, installs one that's offered, and restarts into one that's ready", () => {
     useUpdates.setState(pristineUpdates);
     const check = vi.fn(() => Promise.resolve());
+    const install = vi.fn(() => Promise.resolve());
     const restart = vi.fn(() => Promise.resolve());
-    useUpdates.setState({ check, restart });
-    expect(items("update", "Commands").find((c) => c.id === "updates")?.label).toBe("Check for updates");
+    useUpdates.setState({ check, install, restart });
+    const label = () => items("update", "Commands").find((c) => c.id === "updates")?.label;
+    expect(label()).toBe("Check for updates");
     run("update", "Commands", "updates");
-    expect(check).toHaveBeenCalledWith(true);
+    expect(check).toHaveBeenCalledWith({ asked: true, open: true });
+    for (const update of [{ state: "available", version: "0.2.0" }, { state: "failed", during: "download", message: "cut off", version: "0.2.0" }] as const) {
+      useUpdates.setState({ update });
+      expect(label()).toBe("Update to Moss 0.2.0");
+      run("update", "Commands", "updates");
+    }
+    expect(install).toHaveBeenCalledTimes(2);
+    useUpdates.setState({ update: { state: "failed", during: "check", message: "offline" } });
+    expect(label()).toBe("Check for updates");
     useUpdates.setState({ update: { state: "ready", version: "0.2.0" } });
-    expect(items("update", "Commands").find((c) => c.id === "updates")?.label).toBe("Restart to update to Moss 0.2.0");
+    expect(label()).toBe("Restart to update to Moss 0.2.0");
     run("update", "Commands", "updates");
     expect(restart).toHaveBeenCalledOnce();
     useUpdates.setState(pristineUpdates);
+  });
+
+  it("has no update command in Moss Dev, which never updates", () => {
+    useAppIdentity.setState(mossDev);
+    expect(items("update", "Commands").find((c) => c.id === "updates")).toBeUndefined();
+    useAppIdentity.setState(installedMoss);
   });
 
   it("offers “Match the system theme” only once a theme is pinned", () => {

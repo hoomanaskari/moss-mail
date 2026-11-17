@@ -9,7 +9,6 @@ import { useServerChanges } from "../services/serverChanges";
 import { useSync } from "../services/live";
 import { useStore, type Theme } from "../state/store";
 import { useStartup } from "../state/startup";
-import { useUpdates } from "../state/updates";
 import { addAccountScenes } from "./addAccountScenes";
 import { addressScenes } from "./addressScenes";
 import { askScenes } from "./askScenes";
@@ -28,6 +27,7 @@ import { settingsScenes } from "./settingsScenes";
 import { mcpScenes } from "./mcpScenes";
 import { signatureScenes } from "./signatureScenes";
 import { summaryScenes } from "./summaryScenes";
+import { updateScenes } from "./updateScenes";
 
 export interface Scene {
   /** Puts the store into the state drawn in design.pen. */
@@ -119,10 +119,6 @@ const mailScenes: Record<string, Scene> = {
       accountId: "work", change: "0123456789abcdef0123456789abcdef", revision: 2, state: "blocked", failure: "refused", kind: "done",
       completed: 0, pending: 1, discarded: 0, dropped: 0,
     } } } }),
-  },
-  "inbox-update-ready": {
-    shows: /Moss 0\.2\.0 is ready/,
-    apply: () => useUpdates.setState({ update: { state: "ready", version: "0.2.0" } }),
   },
   "single-account": { shows: /Work inbox/, apply: () => useStore.getState().setAccountFilter("work") },
   "many-accounts": { shows: /^Inbox$/, apply: () => useStore.setState({ accounts: [...accounts, ...extraDemoAccounts] }) },
@@ -304,6 +300,7 @@ export const scenes: Record<string, Scene> = {
   ...askScenes,
   ...moveScenes,
   ...decisionScenes,
+  ...updateScenes,
 };
 
 export function applyScene() {

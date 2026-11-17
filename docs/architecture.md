@@ -28,9 +28,25 @@ How they depend on each other:
 
 The engine sends events (new mail, sync progress, problems) to the window as `moss://event`.
 
+## Moss and Moss Dev
+
+The same code makes two apps. Which one runs is decided by the bundle identifier in the app's config (`src-tauri/src/identity.rs`): only `app.moss.mail` is the installed Moss, and anything else, including every debug build, is Moss Dev. `tauri.conf.json` is the installed Moss's. `tauri.dev.conf.json`, which `pnpm app` and `pnpm tauri dev` lay over it, makes Moss Dev.
+
+| Keyed to the app | Moss | Moss Dev |
+|---|---|---|
+| Data folder: `moss.db`, `window.json`, `crash.log`, the safety copy before a database update, the session lock, `mcp.json`, AI models and runtime, model process ids | `~/Library/Application Support/app.moss.mail` | `~/Library/Application Support/app.moss.mail.dev` |
+| Cache (opened attachments) and WebKit storage (the UI's preferences) | named `app.moss.mail` | named `app.moss.mail.dev` |
+| Keychain service | `app.moss.mail` | `app.moss.mail.dev`. A reference names Moss's items with `app.moss.mail`; the Keychain store files them under the running app's identifier, so Moss Dev can't reach the installed Moss's items even from a copied database. |
+| MCP server | port 47217, agent name `moss` | port 47218, agent name `moss-dev`. A saved port 47217 (in copied data) is left to the installed Moss. |
+| Updater | registered; checks the GitHub feed | not registered, no feed, no update menu item |
+| Menu bar, Dock, window title | Moss | Moss Dev, with the DEV icon and a Dev mark in the top bar |
+| `MOSS_DATA_DIR` | ignored | honoured, except for the installed Moss's own folder |
+
+Things that need no separating: AI model servers and Apple's helper run on free ports picked at each start, behind a random key, and stopping leftovers only touches process ids recorded in the app's own data folder. OAuth sign-in listens on a free loopback port. Backups go where you choose. Moss has no URL scheme, deep links, notifications or single-instance plugin; a second copy of the same app is refused by the data folder's session lock.
+
 ## Where your mail is kept
 
-- One SQLite file, `moss.db`, in Moss's data folder (`~/Library/Application Support/app.moss.mail` on a Mac).
+- One SQLite file, `moss.db`, in Moss's data folder (`~/Library/Application Support/app.moss.mail` on a Mac; Moss Dev's is `app.moss.mail.dev`, see below).
 - The folder is made private (mode `0700`) at start. Moss refuses to start if it can't do that.
 - The database uses WAL mode. Ordinary writes survive a crash. Sends, schedules and other critical changes are written with full sync, so they also survive a power cut.
 - Email bodies are compressed in their own table. A setting picks what stays for offline use: the last 90 days of text, all text (the default), or everything including files.

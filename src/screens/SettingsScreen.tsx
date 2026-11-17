@@ -7,6 +7,7 @@ import { AppFrame, SettingsLayout } from "../design-system/templates";
 import { useStore, type SettingsSection } from "../state/store";
 import { useScreenKeys } from "../state/useScreenKeys";
 import { useUpdates } from "../state/updates";
+import { AboutMoss } from "./settings/AboutMoss";
 import { AccountsSection } from "./settings/AccountsSection";
 import { AiSection } from "./settings/AiSection";
 import { AppearanceSection } from "./settings/AppearanceSection";
@@ -95,7 +96,7 @@ export function SettingsScreen() {
       footer={<ShortcutBar hints={hints[section]} />}
     >
       <SettingsLayout
-        nav={<SettingsNav items={sections} selected={section} onSelect={openSettings} footer={`Moss${version ? ` ${version}` : ""} · Free and open source`} />}
+        nav={<SettingsNav items={sections} selected={section} onSelect={openSettings} footer={<AboutMoss />} />}
       >
         <View key={section} />
       </SettingsLayout>

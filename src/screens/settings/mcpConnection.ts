@@ -19,6 +19,8 @@ export interface Connection {
   token: string;
   /** The Moss program, for Claude Desktop. */
   bridge: string;
+  /** The name the agent knows this Moss by: "moss", or "moss-dev" for Moss Dev, so adding Moss Dev never replaces the installed Moss. */
+  name?: string;
 }
 
 export interface HowTo {
@@ -30,27 +32,27 @@ export interface HowTo {
 
 const json = (v: unknown) => JSON.stringify(v, null, 2);
 
-export function howTo(agent: AgentId, { url, token, bridge }: Connection): HowTo {
+export function howTo(agent: AgentId, { url, token, bridge, name = "moss" }: Connection): HowTo {
   switch (agent) {
     case "claude-code":
       return {
         where: "Run this in Terminal. It adds Moss for all your projects.",
-        text: `claude mcp add --transport http --scope user moss ${url} --header "Authorization: Bearer ${token}"`,
+        text: `claude mcp add --transport http --scope user ${name} ${url} --header "Authorization: Bearer ${token}"`,
       };
     case "codex":
       return {
         where: "Add this to ~/.codex/config.toml, then start Codex again.",
-        text: `[mcp_servers.moss]\nurl = "${url}"\nhttp_headers = { "Authorization" = "Bearer ${token}" }`,
+        text: `[mcp_servers.${name}]\nurl = "${url}"\nhttp_headers = { "Authorization" = "Bearer ${token}" }`,
       };
     case "claude-desktop":
       return {
         where: "In Claude, open Settings, Developer, Edit Config. Add this to the file, then quit and open Claude.",
-        text: json({ mcpServers: { moss: { command: bridge, args: ["mcp", url], env: { MOSS_MCP_TOKEN: token } } } }),
+        text: json({ mcpServers: { [name]: { command: bridge, args: ["mcp", url], env: { MOSS_MCP_TOKEN: token } } } }),
       };
     case "cursor":
       return {
         where: "Add this to ~/.cursor/mcp.json.",
-        text: json({ mcpServers: { moss: { url, headers: { Authorization: `Bearer ${token}` } } } }),
+        text: json({ mcpServers: { [name]: { url, headers: { Authorization: `Bearer ${token}` } } } }),
       };
     case "other":
       return {

@@ -12,11 +12,11 @@ Thanks for wanting to help. Moss is small and early, so the most useful things r
 
 ```bash
 pnpm install
-pnpm tauri dev      # the desktop app, with your real mail
+pnpm tauri dev      # Moss Dev: the desktop app, apart from the Moss you use
 pnpm dev            # the UI only, in a browser, with demo mail
 ```
 
-You need Node 20 or newer, pnpm, and Rust 1.98 or newer. To try a change without touching your real mail, start the app with its own data folder: `MOSS_DATA_DIR=/tmp/moss-try pnpm tauri dev`.
+You need Node 24, pnpm, and Rust 1.98 or newer. What you build is Moss Dev, a separate app from the Moss you install: its own data folder, Keychain items and icon, so trying a change never touches your real mail. `pnpm app` builds it as an app. See "Moss and Moss Dev" in the README.
 
 ## How we work
 

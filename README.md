@@ -145,16 +145,49 @@ You need:
 
 ```bash
 pnpm install
-pnpm tauri dev      # the desktop app
+pnpm tauri dev      # Moss Dev, the desktop app for trying changes
 pnpm dev            # the UI only, in a browser at http://localhost:1420, with demo mail
-pnpm app            # build Moss.app in target/release/bundle/macos
+pnpm app            # build Moss Dev.app in target/release/bundle/macos
 ```
 
-`pnpm app` signs Moss.app with your Developer ID certificate (or `APPLE_SIGNING_IDENTITY`), so the Keychain's "Always Allow" lasts from one build to the next. Without one it signs ad hoc, and macOS asks for your password again after every build.
+### Moss and Moss Dev
 
-Debug builds (`pnpm tauri dev`) keep sign-ins in an encrypted file in the data folder, with its key beside it, so the Keychain doesn't ask after every rebuild. Anyone who can read both files can read the sign-ins. Release builds use the Keychain only. When a release build finds a sign-in from a debug build, it moves it into the Keychain. Keep development data and backups private.
+What you build is **Moss Dev**, a separate app from the Moss you install, so trying a change never touches the mail you use. Both can run at the same time.
 
-The desktop app shows your real mail. The browser (`pnpm dev`) and the `?scene=` links always use the demo mailbox.
+| | Moss | Moss Dev |
+|---|---|---|
+| Made by | `pnpm release` only | `pnpm app`, `pnpm tauri dev` |
+| Bundle identifier | `app.moss.mail` | `app.moss.mail.dev` |
+| Data folder | `~/Library/Application Support/app.moss.mail` | `~/Library/Application Support/app.moss.mail.dev` |
+| Keychain items | service `app.moss.mail` | service `app.moss.mail.dev` |
+| Agents (MCP) | port 47217, named `moss` | port 47218, named `moss-dev` |
+| Updates | checks and installs them | none |
+| Dock icon | Moss | Moss with an orange DEV band, and a Dev mark in the window |
+
+Moss Dev starts empty: add an account to try it. AI models are downloaded again for it, into its own folder. To skip that, clone the installed Moss's models into Moss Dev's folder (an APFS clone takes no extra space, and nothing is written to the installed Moss's folder):
+
+```bash
+mkdir -p ~/Library/Application\ Support/app.moss.mail.dev/ai
+cp -cR ~/Library/Application\ Support/app.moss.mail/ai/models ~/Library/Application\ Support/app.moss.mail/ai/runtime ~/Library/Application\ Support/app.moss.mail.dev/ai/
+```
+
+To try Moss Dev on a **copy** of your mail, quit Moss first (so the copy is whole), copy its folder, then start Moss Dev with `MOSS_DATA_DIR`:
+
+```bash
+cp -cR ~/Library/Application\ Support/app.moss.mail /tmp/moss-copy
+rm -rf /tmp/moss-copy/ai/run /tmp/moss-copy/mcp.json
+MOSS_DATA_DIR=/tmp/moss-copy "target/release/bundle/macos/Moss Dev.app/Contents/MacOS/Moss"
+```
+
+Your mail is there, but every account asks you to sign in again: sign-ins live in the Keychain, not in the folder, and Moss Dev can't reach the installed Moss's. Signing in again in the copy makes Moss Dev's own Keychain items. Moss Dev never opens the installed Moss's own folder, even if `MOSS_DATA_DIR` points there, and the installed Moss ignores `MOSS_DATA_DIR`.
+
+`pnpm app` signs Moss Dev.app with your Developer ID certificate (or `APPLE_SIGNING_IDENTITY`), so the Keychain's "Always Allow" lasts from one build to the next. Without one it signs ad hoc, and macOS asks for your password again after every build.
+
+Debug builds (`pnpm tauri dev`) keep sign-ins in an encrypted file in Moss Dev's data folder, with its key beside it, so the Keychain doesn't ask after every rebuild. Anyone who can read both files can read the sign-ins. Release builds use the Keychain only. When Moss Dev.app finds a sign-in from a debug build, it moves it into its Keychain items. Keep development data and backups private.
+
+The desktop app shows real mail. The browser (`pnpm dev`) and the `?scene=` links always use the demo mailbox.
+
+Moss Dev's icon is drawn by `sh scripts/dev-icon.sh` from `src-tauri/icons/Moss.icon`: run it after changing that icon, and commit what it writes in `src-tauri/icons/dev/`.
 
 ## How it's built
 

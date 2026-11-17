@@ -1,8 +1,9 @@
 //! Restrict the dedicated desktop data directory before opening private storage.
 use std::{fs, io, path::Path};
 
-pub(crate) fn secrets(path: &Path) -> Result<Box<dyn moss_accounts::SecretStore>, Box<dyn std::error::Error>> {
-    initialize(path, || Ok(moss_accounts::platform_secret_store(path)?))
+/// The secret store over the data folder at `path`, with Keychain items filed under `service`.
+pub(crate) fn secrets(path: &Path, service: &str) -> Result<Box<dyn moss_accounts::SecretStore>, Box<dyn std::error::Error>> {
+    initialize(path, || Ok(moss_accounts::platform_secret_store(path, service)?))
 }
 
 /// No private writer runs until the directory boundary is established.
@@ -59,7 +60,7 @@ mod tests {
     fn development_secret_store_uses_the_private_directory_boundary() {
         let root = tempfile::tempdir().unwrap();
         let path = root.path().join("private");
-        let store = secrets(&path).unwrap();
+        let store = secrets(&path, "app.moss.mail.dev").unwrap();
         assert_eq!(fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o700);
         let reference = moss_accounts::SecretRef { service: "app.moss.fixture".into(), account: "fixture".into() };
         assert_eq!(store.load(&reference).unwrap(), None);

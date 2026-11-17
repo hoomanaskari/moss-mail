@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { demoAgents, demoBridge, demoUrl, setAgents, type AgentsBackend } from "../../services/agents";
 import { pristineAgents, useAgents } from "../../state/agents";
+import { installedMoss, mossDev, useAppIdentity } from "../../services/appIdentity";
 import { McpSection } from "./McpSection";
 
 const NOW = 1_800_000_000_000;
@@ -62,6 +63,16 @@ it("turned on, shows Claude Code's command with the token masked, and copies the
   expect(writeText).toHaveBeenCalledWith(expect.stringContaining(`Bearer ${useAgents.getState().view!.token}"`));
   expect(screen.getByRole("button", { name: "Copied for Claude Code" })).toHaveTextContent("Copied");
   expect(screen.getByText("No agent has connected yet")).toBeInTheDocument();
+});
+
+it("in Moss Dev, tells agents its own name, so it never replaces the installed Moss", async () => {
+  useAppIdentity.setState(mossDev);
+  const user = setupUser();
+  await show(demoAgents({ on: true }));
+  expect(screen.getByLabelText("Connection for Claude Code").textContent).toContain(`--scope user moss-dev ${demoUrl}`);
+  await user.click(screen.getByRole("radio", { name: "Codex" }));
+  expect(screen.getByLabelText("Connection for Codex").textContent).toContain("[mcp_servers.moss-dev]");
+  useAppIdentity.setState(installedMoss);
 });
 
 it("'Copied' goes back to 'Copy' after a moment", async () => {

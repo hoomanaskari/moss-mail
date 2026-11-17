@@ -72,6 +72,15 @@ You need four things on the Mac that makes releases.
 
 5. **Try the DMG** from the draft on a Mac. Before publishing, compare the draft's target commit with `source.origin.sha` in `release-manifest.json`. If the version tag already exists, verify that it resolves to that same commit. Do not publish if they differ. The command checks tag availability before the build and again before uploading, but cannot prevent somebody changing a tag later. Then **publish** the draft on GitHub. Publishing is what makes it the update: Moss reads `latest.json` from the newest published release.
 
+## Only `pnpm release` makes Moss
+
+`pnpm app` and `pnpm tauri dev` make **Moss Dev**, a separate app (`app.moss.mail.dev`) with its own data, Keychain items and icon, and no updater. A release is always the installed Moss, and the gate checks it twice:
+
+- before building, the captured `src-tauri/tauri.conf.json` must have the identifier `app.moss.mail`, the name Moss, a window called Moss and Moss's update feed (`scripts/lib/identity.ts`),
+- after building, the app's `Info.plist` must say `app.moss.mail`, before anything is signed, notarized or uploaded (`scripts/package-release.sh`).
+
+The packaging build passes only its own inline settings to Tauri, never Moss Dev's overlay `tauri.dev.conf.json`. Tests in `scripts/lib` hold all of this.
+
 ## Trying it without releasing
 
 ```bash

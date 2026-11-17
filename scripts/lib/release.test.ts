@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { snapshotSource } from "./release-source";
 import { release, type ReleaseIo } from "./release";
+import { updateFeed } from "./identity";
 vi.mock("node:fs", async importOriginal => {
  const actual = await importOriginal<typeof import("node:fs")>();
  return { ...actual, copyFileSync: vi.fn(actual.copyFileSync), rmSync: vi.fn(actual.rmSync) };
@@ -23,7 +24,7 @@ function fixture() {
  const git=(...args:string[])=>execFileSync("git",args,{cwd:root,encoding:"utf8"}).trim();
  git("init","-q","-b","main");git("config","user.name","Test");git("config","user.email","test@example.invalid");
  mkdirSync(join(root,"src-tauri"));mkdirSync(join(root,"docs/releases"),{recursive:true});
- writeFileSync(join(root,"src-tauri/tauri.conf.json"),JSON.stringify({version:"1.2.3",plugins:{updater:{pubkey:publicKey}}}));
+ writeFileSync(join(root,"src-tauri/tauri.conf.json"),JSON.stringify({version:"1.2.3",identifier:"app.moss.mail",productName:"Moss",app:{windows:[{title:"Moss"}]},plugins:{updater:{pubkey:publicKey,endpoints:[updateFeed]}}}));
  writeFileSync(join(root,"docs/releases/1.2.3.md"),"Release notes");writeFileSync(join(root,"main.ts"),"original");
  git("add",".");git("commit","-qm","fixture");const sha=git("rev-parse","HEAD");git("update-ref","refs/remotes/origin/main",sha);
  const logs:string[]=[];
@@ -69,6 +70,13 @@ describe("release command",()=>{
  it("requires the updater public key in the captured configuration",async()=>{
   const f=fixture();writeFileSync(join(f.root,"src-tauri/tauri.conf.json"),JSON.stringify({version:"1.2.3"}));
   await expect(release(["--local"],f.root,f.io)).rejects.toThrow("updater public key");
+ });
+ it("refuses to package a config that isn't the installed Moss's",async()=>{
+  const f=fixture();const shipped=JSON.parse(readFileSync(join(f.root,"src-tauri/tauri.conf.json"),"utf8"));
+  // Moss Dev's identity laid over it, as `pnpm app` does.
+  writeFileSync(join(f.root,"src-tauri/tauri.conf.json"),JSON.stringify({...shipped,identifier:"app.moss.mail.dev",productName:"Moss Dev"}));
+  await expect(release(["--local"],f.root,f.io)).rejects.toThrow("not the installed Moss's config");
+  expect(f.calls.some(c=>c.command==="pnpm"||c.command==="sh")).toBe(false);
  });
  it("refuses publication when update signature verification fails",async()=>{
   const f=fixture();const run=f.io.run;f.io.run=(command,args,options)=>{if(command==="minisign"&&args[0]==="-V")throw new Error("signature rejected");return run(command,args,options);};

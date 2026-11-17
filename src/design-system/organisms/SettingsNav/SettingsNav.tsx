@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { cx } from "../../../lib/cx";
 import { Icon, Kbd } from "../../atoms";
@@ -14,8 +15,8 @@ export interface SettingsNavProps<T extends string> {
   items: SettingsNavItem<T>[];
   selected: T;
   onSelect: (id: T) => void;
-  /** Quiet line at the bottom, e.g. the version. */
-  footer?: string;
+  /** Quiet lines at the bottom: the version, and checking for updates. */
+  footer?: ReactNode;
 }
 
 /** The list of Settings sections down the left, each with its ⌘ key. The current one is raised, like the inbox cursor. */
@@ -40,7 +41,7 @@ export function SettingsNav<T extends string>({ items, selected, onSelect, foote
         );
       })}
       <span className={styles.push} />
-      {footer && <p className={styles.footer}>{footer}</p>}
+      {footer && <div className={styles.footer}>{footer}</div>}
     </nav>
   );
 }

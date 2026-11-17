@@ -23,7 +23,7 @@ markNativeTitleBar();
 
 /** Puts the desktop app's real services in place of the demo ones. Once: Try again only loads the mail again. */
 async function wire() {
-  const [{ tauriMail }, { tauriSetup }, { tauriAi }, { tauriSummaries }, { tauriReplies }, { tauriAsk }, { tauriUpdates }, { tauriAgents }] = await Promise.all([
+  const [{ tauriMail }, { tauriSetup }, { tauriAi }, { tauriSummaries }, { tauriReplies }, { tauriAsk }, { tauriUpdates }, { tauriAgents }, { loadAppIdentity }, { watchMenu }] = await Promise.all([
     import("./services/tauriMail"),
     import("./services/tauriSetup"),
     import("./services/tauriAi"),
@@ -32,7 +32,11 @@ async function wire() {
     import("./services/tauriAsk"),
     import("./services/tauriUpdates"),
     import("./services/tauriAgents"),
+    import("./services/tauriIdentity"),
+    import("./services/menu"),
   ]);
+  // The installed Moss or Moss Dev: Moss Dev never checks for updates.
+  await loadAppIdentity();
   setMail(tauriMail);
   setAccountSetup(tauriSetup);
   setAi(tauriAi);
@@ -41,7 +45,9 @@ async function wire() {
   setAsk(tauriAsk);
   setUpdates(tauriUpdates);
   setAgents(tauriAgents);
-  // Looks for a newer Moss now and every six hours, and downloads it quietly.
+  // The app menu's Check for Updates…
+  watchMenu();
+  // Looks for a newer Moss a little after launch and every six hours, and offers it in the top bar.
   startUpdates();
 }
 

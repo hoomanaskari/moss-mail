@@ -4,6 +4,7 @@ import { cx } from "../../lib/cx";
 import { Button, Icon, Kbd, Toggle } from "../../design-system/atoms";
 import { ListCard, ListRow, Notice, SectionHeader, SegmentedControl } from "../../design-system/molecules";
 import { useAgents, type Copied } from "../../state/agents";
+import { useAppIdentity } from "../../services/appIdentity";
 import { useScreenKeys } from "../../state/useScreenKeys";
 import { agentTabs, howTo, lastUsedText, masked, shown } from "./mcpConnection";
 import shared from "./settings.module.css";
@@ -31,7 +32,8 @@ export function McpSection({ now = Date.now }: { now?: () => number }) {
   }, [load]);
 
   const on = !!view?.on && !!view.url && !!view.token;
-  const connection = on ? { url: view!.url!, token: view!.token!, bridge: view!.bridge } : undefined;
+  const name = useAppIdentity((i) => i.agentName);
+  const connection = on ? { url: view!.url!, token: view!.token!, bridge: view!.bridge, name } : undefined;
   const how = connection && howTo(agent, connection);
 
   // A: on or off. While on: 1 – 5 pick the agent, C copies, N makes a new token (twice).

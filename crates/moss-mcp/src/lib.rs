@@ -37,6 +37,8 @@ pub use tools::MossTools;
 
 /// The port Moss asks for first, so the address you paste into an agent stays the same.
 pub const PORT: u16 = 47_217;
+/// The port Moss Dev asks for first, so it never takes the installed Moss's address.
+pub const DEV_PORT: u16 = 47_218;
 /// The path the server answers on.
 pub const PATH: &str = "/mcp";
 /// The Keychain item the token is kept in.
@@ -211,13 +213,8 @@ impl Mcp {
             Some(t) => t,
             None => self.make_token()?,
         };
-        let asked = self
-            .0
-            .settings
-            .lock()
-            .unwrap()
-            .port
-            .unwrap_or(self.0.parts.port);
+        let saved = self.0.settings.lock().unwrap().port;
+        let asked = first_port(saved, self.0.parts.port);
         let listener = match TcpListener::bind(("127.0.0.1", asked)).await {
             Ok(l) => l,
             // Taken by something else: any free port, kept from now on.
@@ -314,6 +311,16 @@ impl Mcp {
             .map_err(|e| McpError::Settings(e.to_string()))?;
         *settings = next;
         Ok(())
+    }
+}
+
+/// The port to ask for first: the one saved last time, or `default`. Only the installed Moss
+/// (whose default is [`PORT`]) takes PORT: another Moss that finds it saved, in a copy of the
+/// installed Moss's data, asks for its own default instead.
+fn first_port(saved: Option<u16>, default: u16) -> u16 {
+    match saved {
+        Some(PORT) if default != PORT => default,
+        saved => saved.unwrap_or(default),
     }
 }
 

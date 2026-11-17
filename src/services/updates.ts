@@ -24,8 +24,8 @@ export interface UpdatesBackend {
 
 export const noUpdate = "No update to install. Check again.";
 
-/** Moss `version` (0.1.0), with `next` waiting on the server if given. */
-export function demoUpdates({ version = "0.1.0", next }: { version?: string; next?: string } = {}): UpdatesBackend {
+/** Moss `version` (0.1.0), with `next` (and what's new in it) waiting on the server if given. */
+export function demoUpdates({ version = "0.1.0", next, notes }: { version?: string; next?: string; notes?: string } = {}): UpdatesBackend {
   let running = version;
   let waiting = next;
   let found: string | undefined;
@@ -33,7 +33,7 @@ export function demoUpdates({ version = "0.1.0", next }: { version?: string; nex
     version: async () => running,
     check: async () => {
       found = waiting;
-      return found ? { version: found } : null;
+      return found ? { version: found, ...(notes && { notes }) } : null;
     },
     install: async (progress) => {
       if (!found) throw new Error(noUpdate);

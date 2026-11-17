@@ -6,6 +6,7 @@ import { captureCommit, captureWorkingSource } from "./release-capture.ts";
 import { snapshotSource } from "./release-source.ts";
 import { validateAndPackage } from "./release-gate.ts";
 import { verifyUpdate } from "./release-update.ts";
+import { assertProduction } from "./identity.ts";
 import { isVersion } from "./version.ts";
 
 export interface ReleaseIo { env: NodeJS.ProcessEnv; log(message: string): void; run(command: string, args: string[], options: {cwd: string; env: NodeJS.ProcessEnv; capture?: boolean}): string }
@@ -71,6 +72,7 @@ export async function release(args: string[], root: string, io: ReleaseIo): Prom
     if (typeof version !== "string" || !isVersion(version)) throw new Error("Invalid release version");
     const publicKey: unknown = config.plugins?.updater?.pubkey;
     if (typeof publicKey !== "string") throw new Error("Missing updater public key");
+    assertProduction(config);
     const notes = join(snapshot, "docs/releases", `${version}.md`);
     if (!readFileSync(notes, "utf8").trim()) throw new Error("Release notes are empty");
     const tag = `v${version}`;

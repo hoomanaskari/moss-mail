@@ -34,6 +34,14 @@ describe("what each agent gets", () => {
     expect(howTo("other", c).text).toBe("URL: http://127.0.0.1:47217/mcp\nAuthorization: Bearer moss_abc123def");
   });
 
+  it("Moss Dev goes by its own name in every agent, so it never replaces the installed Moss", () => {
+    const dev = { ...c, url: "http://127.0.0.1:47218/mcp", bridge: "/Applications/Moss Dev.app/Contents/MacOS/Moss", name: "moss-dev" };
+    expect(howTo("claude-code", dev).text).toContain("--scope user moss-dev http://127.0.0.1:47218/mcp");
+    expect(howTo("codex", dev).text).toMatch(/^\[mcp_servers\.moss-dev\]/);
+    expect(Object.keys(JSON.parse(howTo("claude-desktop", dev).text).mcpServers)).toEqual(["moss-dev"]);
+    expect(Object.keys(JSON.parse(howTo("cursor", dev).text).mcpServers)).toEqual(["moss-dev"]);
+  });
+
   it("every tab has words, and none has an em dash", () => {
     for (const t of agentTabs) {
       const h = howTo(t.value, c);
