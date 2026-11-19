@@ -471,6 +471,29 @@ async fn delete_moves_to_trash_on_the_server_and_undo_brings_it_back() {
 }
 
 #[tokio::test(start_paused = true)]
+async fn undoing_a_delete_keeps_the_email_open_when_the_server_reports_its_old_place_gone() {
+    let s = setup();
+    s.inbox(1, "a@x", "Budget", NOW);
+    s.gmail().await;
+    s.synced().await;
+    let id = s.thread_id("Budget");
+
+    s.engine.delete_thread(&id).unwrap();
+    settle().await;
+    s.engine.restore_thread(&id).unwrap();
+    settle().await;
+    // The server moved it to Trash and back: the Inbox has it under a new UID, and the next
+    // sync says the old one went.
+    s.fake.vanish("1:1");
+    s.inbox(2, "a@x", "Budget", NOW);
+    s.engine.sync_now(Some("gmail"));
+    settle().await;
+
+    assert_eq!(s.subjects(), ["Budget"]);
+    assert!(s.engine.done_threads(None, 10).unwrap().is_empty());
+}
+
+#[tokio::test(start_paused = true)]
 async fn undo_right_after_done_reaches_the_server_after_the_archive() {
     let s = setup();
     s.inbox(1, "a@x", "Budget", NOW);

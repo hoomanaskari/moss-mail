@@ -164,6 +164,14 @@ impl Shared {
                     // Only where it was: the thread is done here already, or undone since.
                     self.store().forget_locations(account_id, mailbox, ids)?;
                 }
+                // Gone from the Inbox now. If sync saw it go after Undo had put it back here,
+                // it would count it as done in another app.
+                if let ServerChange::Trash { message_ids } = &change {
+                    let inbox = self.inbox_name(account_id);
+                    let mut store = self.store();
+                    let ids = store.provider_ids_of(account_id, &inbox, message_ids)?;
+                    store.forget_locations(account_id, &inbox, &ids)?;
+                }
                 Ok(Attempt::Applied)
             }
             Err(error) => Ok(match attempt(error) {

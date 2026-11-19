@@ -71,6 +71,24 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
+    /// The provider ids stored in a mailbox for these Message-IDs: where mail that the server
+    /// found by Message-ID and moved used to be.
+    pub fn provider_ids_of(&self, account_id: &str, mailbox: &str, message_ids: &[String]) -> Result<Vec<String>> {
+        let mut stmt = self.conn.prepare_cached(
+            "SELECT l.provider_id FROM message_locations l JOIN mailboxes b ON b.id = l.mailbox_id
+             JOIN messages m ON m.id = l.message_id
+             WHERE b.account_id = ?1 AND b.name = ?2 AND m.message_id = ?3 ORDER BY l.provider_id",
+        )?;
+        let mut ids = Vec::new();
+        for message_id in message_ids {
+            for id in stmt.query_map(params![account_id, mailbox, message_id], |r| r.get(0))? {
+                ids.push(id?);
+            }
+        }
+        ids.sort();
+        Ok(ids)
+    }
+
     /// How many messages are stored as in `mailbox`, without reading their ids.
     pub fn mailbox_count(&self, account_id: &str, mailbox: &str) -> Result<u32> {
         Ok(self.conn.prepare_cached(
@@ -344,6 +362,23 @@ mod tests {
     }
 
     #[test]
+    fn a_mailbox_finds_the_provider_ids_of_messages_by_message_id() {
+        // A delete moves mail by Message-ID; its old place here is forgotten by provider id.
+        let mut store = store_with_work();
+        inbox_role(&mut store);
+        ingest(&mut store, "1:7", &mail().build());
+        ingest(&mut store, "1:8", &mail().id("other@x").build());
+        let ids = |mailbox: &str, wanted: &[&str]| {
+            let wanted: Vec<String> = wanted.iter().map(|s| s.to_string()).collect();
+            store.provider_ids_of("work", mailbox, &wanted).unwrap()
+        };
+        assert_eq!(ids("INBOX", &["q4@northwind.co", "nobody@x"]), ["1:7"]);
+        assert_eq!(ids("INBOX", &["other@x", "q4@northwind.co"]), ["1:7", "1:8"]);
+        assert!(ids("INBOX", &[]).is_empty());
+        assert!(ids("Projects", &["q4@northwind.co"]).is_empty());
+    }
+
+    #[test]
     fn a_thread_lists_the_message_ids_the_server_can_find() {
         let mut store = store_with_work();
         let id = ingest(&mut store, "1", &mail().build()).thread_id;
@@ -363,6 +398,7 @@ mod tests {
         assert!(store.thread_locations(&id).is_err());
         assert!(store.provider_ids("work", "INBOX").is_err());
         assert!(store.mailbox_count("work", "INBOX").is_err());
+        assert!(store.provider_ids_of("work", "INBOX", &["q4@northwind.co".into()]).is_err());
         break_schema(&store, "ALTER TABLE messages RENAME COLUMN message_id TO mid");
         assert!(store.message_ids(&id).is_err());
         read_only(&store);
