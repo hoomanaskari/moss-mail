@@ -1,7 +1,7 @@
 {
   "name": "moss-mail",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Moss: a calm, keyboard-first email client with private AI.",
   "license": "MIT",
   "type": "module",
@@ -15,7 +15,7 @@
     "test:native-email": "node src/test/native-email/run.mjs",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "check": "pnpm typecheck && pnpm coverage && cargo llvm-cov --workspace --locked --summary-only --show-missing-lines --fail-under-lines 99.478 && swift test --package-path apple --enable-code-coverage && pnpm test:native-email && pnpm tauri build --no-bundle -- --locked",
+    "check": "pnpm typecheck && pnpm coverage && cargo llvm-cov --workspace --locked --summary-only --show-missing-lines --fail-under-lines 99.479 && swift test --package-path apple --enable-code-coverage && pnpm test:native-email && pnpm tauri build --no-bundle -- --locked",
     "app": "sh scripts/app.sh",
     "set-version": "node scripts/set-version.ts",
     "release": "sh scripts/release.sh",

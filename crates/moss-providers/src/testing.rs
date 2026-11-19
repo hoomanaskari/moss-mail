@@ -356,8 +356,8 @@ async fn smtp_session<S: AsyncRead + AsyncWrite + Unpin>(
                 }
                 data.extend_from_slice(&chunk);
             }
-            // The CRLF before the final dot belongs to the terminator.
-            data.truncate(data.len().saturating_sub(2));
+            // The data is every line before the lone dot, the last one's CRLF included (RFC 5321
+            // 4.1.1.4).
             log.lock().unwrap().data = data;
             match after {
                 AfterData::Lose => return false,

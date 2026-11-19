@@ -2717,9 +2717,9 @@ checksum = "20870f649af7073d53e38067b2a84312175d56ea15217e1b15bc83506ec50afb"
 
 [[package]]
 name = "lettre"
-version = "0.11.23"
+version = "0.11.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2c646bd5cc763b1087b15493e29a64be6147ba8f19342004fa52048ee596eae"
+checksum = "f294f3d7cdb313e578acef7d7727d4e8d897e0fcd0d6d58c19959cec95073f19"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -2951,7 +2951,7 @@ dependencies = [
 
 [[package]]
 name = "moss"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -2981,7 +2981,7 @@ dependencies = [
 
 [[package]]
 name = "moss-accounts"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "apple-native-keyring-store",
  "base64 0.22.1",
@@ -3006,7 +3006,7 @@ dependencies = [
 
 [[package]]
 name = "moss-ai"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3027,7 +3027,7 @@ dependencies = [
 
 [[package]]
 name = "moss-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -3035,7 +3035,7 @@ dependencies = [
 
 [[package]]
 name = "moss-engine"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3057,7 +3057,7 @@ dependencies = [
 
 [[package]]
 name = "moss-extract"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "crc32fast",
  "flate2",
@@ -3075,7 +3075,7 @@ dependencies = [
 
 [[package]]
 name = "moss-mcp"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "axum",
@@ -3099,7 +3099,7 @@ dependencies = [
 
 [[package]]
 name = "moss-providers"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-imap",
  "async-trait",
@@ -3124,7 +3124,7 @@ dependencies = [
 
 [[package]]
 name = "moss-store"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "base64 0.23.1",
  "libc",
@@ -5713,7 +5713,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.3",
+ "getrandom 0.3.4",
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",
