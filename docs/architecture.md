@@ -125,6 +125,16 @@ Drafts shows a list of sends that need you: `uncertain` ones, `accepted` ones wh
 - When the server copy and your copy both changed, Moss keeps both as separate drafts and asks you to review Drafts.
 - Quitting Moss waits for pending saves. It tells you what is still unsaved instead of quitting.
 
+## Mail links
+
+Moss can be your default email app (Mail, Settings, General, Default email reader). Then a `mailto:` link clicked on a website or in another app opens a new email in Moss.
+
+- `Info.plist` tells macOS that Moss opens `mailto:` links. Moss Dev says so too, so it can be tried; macOS sends links only to the app you chose.
+- macOS sends the link to Moss's run loop. `src-tauri/src/mail_links.rs` keeps it, brings the window forward and tells it. A link that started Moss waits there until your accounts have loaded.
+- The window takes the waiting links (`src/services/mailLinks.ts`) and opens a new email for each, with To, Cc, Bcc, subject and text from the link (`src/lib/mailLink.ts`, RFC 6068). It goes from the account and signature a new email would get.
+- A mail link clicked inside Moss, in an email or an AI answer, opens a new email the same way, whichever app is your default.
+- With no account yet there is nothing to send from, so the link is dropped.
+
 ## Server changes
 
 Done, read, delete, move, block and similar actions change your mail locally at once. The server change goes into a queue (the `outbox` table) and runs later, in order, per account.
@@ -193,7 +203,7 @@ An HTML email is shown in a frame that can't run its own code or reach Moss.
 - **Content Security Policy.** The frame's document allows no scripts, no forms, no fonts from the web and no network, except images once they are allowed.
 - **Sandbox.** The frame is sandboxed. Moss's own listeners size it, pass keys on and catch link clicks. The policy still blocks the email's scripts.
 - **No referrer.** Image loads send no referrer.
-- **Links.** Only `http`, `https` and `mailto` links open, and they go to your browser. Other windows stay on Moss's own pages (`src-tauri/src/links.rs`).
+- **Links.** Only `http`, `https` and `mailto` links open. Web links go to your browser. Mail links open a new email in Moss, filled in from the link (`src/lib/mailLink.ts`). Other windows stay on Moss's own pages (`src-tauri/src/links.rs`).
 - **Remote images.** Load by themselves for familiar senders, but only when the account's mail server confirmed the sender (`crates/moss-store/src/authres.rs`). Moss knows how to read that for Gmail, Microsoft, iCloud and Fastmail accounts; other accounts always ask first. "Just this once" loads them for any email. Settings, Appearance can ask for every message. Images that look like trackers are removed, but that check is a guess.
 
 `pnpm test:native-email` checks these documents in WebKit. See [native-email-security.md](native-email-security.md).

@@ -19,6 +19,7 @@ import { pickFor, signedBefore, useSignatures, type SignaturePick } from "./sign
 import { initialPreferences, systemTheme } from "./usePreferences";
 import { isTauri } from "../lib/platform";
 import { textToHtml } from "../lib/textHtml";
+import { parseMailLink } from "../lib/mailLink";
 import { plainText } from "../lib/markdown";
 
 export type View = "inbox" | "thread" | "compose" | "zero" | "add-account" | "settings" | "search" | "done" | "blocked" | "drafts" | "senders" | "scheduled";
@@ -294,6 +295,8 @@ interface State {
   setReplyDraft(text: string): void;
   /** A new email, reply or forward. A reply opens the one you have half written there, unless `fresh`. */
   compose(mode: ComposeMode, threadId?: string, fresh?: boolean): void;
+  /** A new email filled in from a mail link (`mailto:`) a website, another app or an email opened. */
+  composeFromLink(url: string): void;
   /** The Quick reply in the composer; `signatureId`, when given, is the signature you picked on it (null: none). */
   editInstantReply(signatureId?: string | null): void;
   updateDraft(patch: Partial<Draft>): void;
@@ -1333,6 +1336,14 @@ export const useStore = create<State>()((set, get) => ({
       },
     });
     previewFiles(get().draft!.id, get().draft!.attachments ?? []);
+  },
+
+  composeFromLink: (url) => {
+    const link = parseMailLink(url);
+    if (!link || !get().accounts.length) return;
+    get().compose("new");
+    const { to, cc, bcc, subject, body } = link;
+    get().updateDraft({ to, cc, bcc, subject, body, bodyHtml: textToHtml(body), showCc: cc.length > 0, showBcc: bcc.length > 0 });
   },
 
   editInstantReply: (signatureId) => {

@@ -12,6 +12,7 @@ mod frame;
 pub mod identity;
 mod leftovers;
 mod links;
+mod mail_links;
 pub mod mcp;
 pub mod menu;
 mod outbox;
@@ -1012,8 +1013,10 @@ pub fn with_commands<R: Runtime>(builder: tauri::Builder<R>) -> tauri::Builder<R
         .manage(writing::Writing::default())
         .manage(quit_gate::QuitGate::default())
         .manage(backups::Backups::default())
+        .manage(mail_links::MailLinks::default())
         .invoke_handler(tauri::generate_handler![
         app_info,
+        mail_links::take_mail_links,
         identity::app_identity,
         quit_gate::quit_ready,
         quit_gate::quit_blocked,
@@ -1253,11 +1256,14 @@ pub fn run() {
 }
 
 /// What Moss does as it runs: a Dock click brings back the window the red button hid (the test
-/// runtime can't send one; `window::reopen` is tested), and quitting finishes up.
+/// runtime can't send one; `window::reopen` is tested), a mail link from another app opens a
+/// new email, and quitting finishes up.
 fn on_run_event<R: Runtime>(app: &tauri::AppHandle<R>, event: tauri::RunEvent) {
     match event {
         #[cfg(target_os = "macos")]
         tauri::RunEvent::Reopen { .. } => window::reopen(app.get_webview_window("main").as_ref()),
+        #[cfg(target_os = "macos")]
+        tauri::RunEvent::Opened { urls } => mail_links::arrived(app, &urls),
         tauri::RunEvent::ExitRequested { api, .. } => {
             if app.state::<quit_gate::QuitGate>().request(false,&app.state::<quit_gate::Actions>()) { api.prevent_exit(); }
         }
@@ -1998,6 +2004,16 @@ mod tests {
         assert!(store.delivery("early-undo").unwrap().is_none());
         assert_eq!(store.delivery_state("early-undo").unwrap(), Some(moss_store::DeliveryState::Cancelled));
         assert_eq!(store.drafts(None).unwrap()[0].body, "Hello");
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn a_mail_link_from_another_app_waits_for_the_window() {
+        let a = app();
+        let link: tauri::Url = "mailto:lena@northwind.co?subject=Q3%20plan".parse().unwrap();
+        on_run_event(a.app.handle(), tauri::RunEvent::Opened { urls: vec![link] });
+        assert_eq!(invoke(&a.webview, "take_mail_links", json!({})).unwrap(), json!(["mailto:lena@northwind.co?subject=Q3%20plan"]));
+        assert_eq!(invoke(&a.webview, "take_mail_links", json!({})).unwrap(), json!([]));
     }
 
     #[test]

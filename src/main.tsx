@@ -68,10 +68,12 @@ async function connect() {
   await startLive();
 }
 
-void start(connect).then(() =>
+void start(connect).then(() => {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <App />
     </StrictMode>,
-  ),
-);
+  );
+  // Mail links from other apps, once your accounts have loaded: one may be what started Moss.
+  if (isTauri) void import("./services/mailLinks").then(({ watchMailLinks }) => watchMailLinks());
+});
