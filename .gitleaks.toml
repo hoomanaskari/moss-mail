@@ -1,0 +1,11 @@
+# gitleaks config for the pre-push secret scan. Keeps every default rule.
+[extend]
+useDefault = true
+
+# Pencil (pen.dev) writes a "fileToken" ID into design.pen when it saves.
+# It is a file ID, not a credential, so the scan skips it in that file only.
+[[allowlists]]
+description = "Pencil fileToken in design.pen"
+paths = ['''^design\.pen$''']
+regexTarget = "line"
+regexes = ['''^\s*"fileToken":\s*"[0-9a-fA-F-]{36}"\s*$''']
