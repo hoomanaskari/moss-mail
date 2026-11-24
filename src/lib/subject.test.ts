@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { replySubject, stripRe } from "./subject";
+import { isReplySubject, replySubject, stripRe } from "./subject";
 
 // The same cases as Rust's `strip_re` (moss-mcp) and `reply_subject` (moss-ai).
 describe("stripRe", () => {
@@ -31,5 +31,21 @@ describe("replySubject", () => {
     ["Re: Grüße", "Re: Grüße"],
   ])("%j gives %j", (subject, want) => {
     expect(replySubject(subject)).toBe(want);
+  });
+});
+
+describe("isReplySubject", () => {
+  it.each([
+    ["Re: Lunch", true],
+    ["RE: Lunch", true],
+    ["  re : Lunch", true],
+    ["Re: Fwd: Lunch", true],
+    ["Fwd: Re: Lunch", false],
+    ["Fwd: Lunch", false],
+    ["Lunch", false],
+    ["Reminder: Lunch", false],
+    ["", false],
+  ])("%j is %j", (subject, want) => {
+    expect(isReplySubject(subject)).toBe(want);
   });
 });

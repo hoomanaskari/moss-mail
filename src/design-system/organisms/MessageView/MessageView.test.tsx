@@ -238,3 +238,19 @@ describe("MessageView body", () => {
     });
   });
 });
+
+describe("quoted text", () => {
+  const forward = message({ html: `<div>FYI</div><blockquote type="cite">The invoice is due.</blockquote>` });
+  const view = (quoteIsNew?: boolean) =>
+    render(<MessageView message={forward} account={work} recipientsOpen={false} onToggleRecipients={vi.fn()} quoteIsNew={quoteIsNew} />);
+
+  it("stays open when it is new to you", () => {
+    view(true);
+    expect((screen.getByTitle("Email") as HTMLIFrameElement).srcdoc).toContain("The invoice is due.");
+  });
+
+  it("collapses otherwise", () => {
+    view();
+    expect((screen.getByTitle("Email") as HTMLIFrameElement).srcdoc).not.toContain("The invoice is due.");
+  });
+});

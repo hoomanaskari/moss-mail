@@ -230,7 +230,7 @@ export const sampleThreads: Thread[] = [
     split: "other",
     section: "info",
     from: people.fintan,
-    subject: "Photos from the harbour walk",
+    subject: "Re: Photos from the harbour walk",
     time: "Yesterday",
     messages: [msg("sample-text-1", people.fintan, { ...people.maya, email: personal.address }, { text: plainText }, ["The photos are up."])],
   },

@@ -839,3 +839,35 @@ describe("ThreadScreen: senders", () => {
     });
   });
 });
+
+describe("quoted text", () => {
+  const quoting = (id: string, said: string, quoted: string) =>
+    message({ id, paragraphs: [said], html: `<div>${said}</div><blockquote type="cite">${quoted}</blockquote>` });
+  const docs = () => screen.getAllByTitle("Email").map((f) => (f as HTMLIFrameElement).srcdoc);
+
+  it("is open in a thread's first email, such as a forward: you have nowhere else to read it", () => {
+    resetStore([thread("f", { messages: [quoting("f-1", "FYI", "The invoice is due.")] })]);
+    s().open("f");
+    render(<ThreadScreen />);
+    expect(docs()[0]).toContain("The invoice is due.");
+  });
+
+  it("is collapsed in a first email that answers one you can't see here: what it quotes is old news to you", () => {
+    resetStore([thread("f", { subject: "Re: Invoice", messages: [quoting("f-1", "Paid.", "The invoice is due.")] })]);
+    s().open("f");
+    render(<ThreadScreen />);
+    expect(docs()[0]).not.toContain("The invoice is due.");
+    expect(screen.getByRole("button", { name: "Show quoted text" })).toBeInTheDocument();
+  });
+
+  it("is collapsed in a reply, and still open in the first email above it", async () => {
+    resetStore([thread("f", { messages: [quoting("f-1", "FYI", "The invoice is due."), quoting("f-2", "Paid.", "Old words.")] })]);
+    s().open("f");
+    render(<ThreadScreen />);
+    expect(docs()).toHaveLength(1);
+    expect(docs()[0]).toContain("Paid.");
+    expect(docs()[0]).not.toContain("Old words.");
+    await userEvent.setup().click(screen.getByRole("button", { name: /FYI/ }));
+    expect(docs()[0]).toContain("The invoice is due.");
+  });
+});

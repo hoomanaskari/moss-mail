@@ -609,3 +609,59 @@ describe("linkify", () => {
     expect(linkify("")).toEqual([]);
   });
 });
+
+describe("prepareHtml: a quote that is new to you", () => {
+  const fresh = { allowImages: false, showQuoted: false, quoteIsNew: true };
+  // Apple Mail in Turkish: no English "forwarded message" anywhere.
+  const appleForward = `<div dir="ltr"></div><div dir="ltr"><br></div><div dir="ltr"><br>İleti başlangıcı:<br><br></div><blockquote type="cite"><div dir="ltr"><b>Kimden:</b> SDG &lt;billing@sdg.example&gt;<br><b>Konu:</b> Invoice 5674<br><br></div></blockquote><blockquote type="cite"><div dir="ltr">Your invoice is due.</div></blockquote>`;
+
+  it("keeps a forward open in any language when it starts the thread", () => {
+    const { body, hasQuoted } = prepareHtml(appleForward, fresh);
+    expect(hasQuoted).toBe(false);
+    expect(body).toContain("Kimden:");
+    expect(body).toContain("Your invoice is due.");
+  });
+
+  it("still collapses the same quote further down a thread, where you can read it above", () => {
+    const { body, hasQuoted } = prepareHtml(appleForward, { allowImages: false, showQuoted: false });
+    expect(hasQuoted).toBe(true);
+    expect(body).not.toContain("Your invoice is due.");
+  });
+
+  it("keeps the newest forwarded email open and collapses the history inside it", () => {
+    const html = `<div>See below.</div><blockquote type="cite"><div>Latest news.</div><div>On Sat, Ines wrote:</div><blockquote type="cite">Older news.</blockquote></blockquote>`;
+    const hidden = prepareHtml(html, fresh);
+    expect(hidden.hasQuoted).toBe(true);
+    expect(hidden.body).toContain("Latest news.");
+    expect(hidden.body).not.toContain("Older news.");
+    expect(hidden.body).not.toContain("Ines wrote:");
+    expect(prepareHtml(html, { ...fresh, showQuoted: true }).body).toContain("Older news.");
+  });
+
+  it("keeps a Gmail quote whole: its “On … wrote:” line and the text under it", () => {
+    const html = `<div dir="ltr">Sounds good.</div><div class="gmail_quote"><div class="gmail_attr">On Sun, Lena wrote:<br></div><blockquote class="gmail_quote">Can we meet Friday?<div class="gmail_quote"><div class="gmail_attr">On Sat, Maya wrote:</div><blockquote class="gmail_quote">Lunch?</blockquote></div></blockquote></div>`;
+    const { body, hasQuoted } = prepareHtml(html, fresh);
+    expect(hasQuoted).toBe(true);
+    expect(body).toContain("On Sun, Lena wrote:");
+    expect(body).toContain("Can we meet Friday?");
+    expect(body).not.toContain("Lunch?");
+    expect(body).not.toContain("On Sat, Maya wrote:");
+  });
+
+  it("keeps an Outlook forward open and collapses the older email under it", () => {
+    const html = `<div>FYI</div><hr><div id="divRplyFwdMsg"><b>From:</b> Ines</div><div>The plan</div><hr><div id="divRplyFwdMsg"><b>From:</b> Jonas</div><div>The old plan</div>`;
+    const { body, hasQuoted } = prepareHtml(html, fresh);
+    expect(hasQuoted).toBe(true);
+    expect(body).toContain("The plan");
+    expect(body).not.toContain("The old plan");
+    expect(body).not.toContain("Jonas");
+  });
+
+  it("collapses the history inside a forward wherever it is in the thread", () => {
+    const html = `<div>FYI</div><div class="gmail_quote"><div class="gmail_attr">---------- Forwarded message ---------<br>From: Ines</div><div>The plan<div class="gmail_quote"><div class="gmail_attr">On Sat, Jonas wrote:</div><blockquote class="gmail_quote">The old plan</blockquote></div></div></div>`;
+    const { body, hasQuoted } = prepareHtml(html, { allowImages: false, showQuoted: false });
+    expect(hasQuoted).toBe(true);
+    expect(body).toContain("The plan");
+    expect(body).not.toContain("The old plan");
+  });
+});

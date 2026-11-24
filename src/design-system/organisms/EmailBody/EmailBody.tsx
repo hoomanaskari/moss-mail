@@ -21,6 +21,8 @@ export interface EmailBodyProps {
   senderUnconfirmed?: boolean;
   /** Explicit permission for this message, including strict mode. */
   imagesShown?: boolean;
+  /** What it quotes is nowhere earlier in the thread (it is the thread's first email, often a forward): the quote starts open. */
+  quoteIsNew?: boolean;
   /** Your address, to spot trackers that carry it. */
   recipient?: string;
   /** Just this once. */
@@ -35,7 +37,7 @@ export interface EmailBodyProps {
 export function EmailBody(props: EmailBodyProps) {
   const { html, text, paragraphs } = props.message;
   if (html) return <HtmlBody {...props} html={html} />;
-  if (text !== undefined) return <TextBody text={text} onOpenLink={props.onOpenLink} />;
+  if (text !== undefined) return <TextBody text={text} quoteIsNew={props.quoteIsNew} onOpenLink={props.onOpenLink} />;
   return (
     <div className={styles.body}>
       <Paragraphs paragraphs={paragraphs} onOpenLink={props.onOpenLink} />
@@ -73,8 +75,8 @@ function Paragraphs({ paragraphs, onOpenLink }: { paragraphs: string[]; onOpenLi
 
 const toParagraphs = (text: string) => text.split(/\n[ \t]*\n/).filter((p) => p.trim());
 
-function TextBody({ text, onOpenLink }: { text: string; onOpenLink: (url: string) => void }) {
-  const [showQuoted, setShowQuoted] = useState(false);
+function TextBody({ text, quoteIsNew = false, onOpenLink }: { text: string; quoteIsNew?: boolean; onOpenLink: (url: string) => void }) {
+  const [showQuoted, setShowQuoted] = useState(quoteIsNew);
   const { body, quoted } = useMemo(() => splitQuotedText(text), [text]);
   return (
     <div className={styles.body}>
@@ -92,7 +94,7 @@ function TextBody({ text, onOpenLink }: { text: string; onOpenLink: (url: string
 const trackerCount = (n: number) => `${n} possible ${n === 1 ? "tracker" : "trackers"} removed`;
 
 function HtmlBody(props: EmailBodyProps & { html: string }) {
-  const { html, theme, readingSize, recipient, senderUnconfirmed, onShowImages, onAllowImages, onOpenLink } = props;
+  const { html, theme, readingSize, recipient, quoteIsNew, senderUnconfirmed, onShowImages, onAllowImages, onOpenLink } = props;
   const strict = useRemoteImages((s) => s.policy === "ask");
   const imagesAllowed = props.imagesShown || (!strict && props.imagesAllowed);
   const [showQuoted, setShowQuoted] = useState(false);
@@ -103,8 +105,8 @@ function HtmlBody(props: EmailBodyProps & { html: string }) {
   openLink.current = onOpenLink;
 
   const prepared = useMemo(
-    () => prepareHtml(html, { allowImages: imagesAllowed, showQuoted, recipient }),
-    [html, imagesAllowed, showQuoted, recipient],
+    () => prepareHtml(html, { allowImages: imagesAllowed, showQuoted, quoteIsNew, recipient }),
+    [html, imagesAllowed, showQuoted, quoteIsNew, recipient],
   );
   // The email whose dark version turned out unreadable (dark text left on dark paper): it shows its light version.
   const [lightOnly, setLightOnly] = useState<string>();

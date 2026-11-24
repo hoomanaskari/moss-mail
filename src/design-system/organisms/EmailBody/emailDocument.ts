@@ -13,6 +13,11 @@ export interface PrepareOptions {
   allowImages: boolean;
   /** Keep quoted history in the body instead of collapsing it. */
   showQuoted: boolean;
+  /**
+   * Nothing earlier in the thread holds what this email quotes (it is the thread's first email, often a forward):
+   * its outermost quote stays in the body, and only the history inside that quote collapses.
+   */
+  quoteIsNew?: boolean;
   /** Your address: an image whose address carries it is reporting that you opened the email. */
   recipient?: string;
 }
@@ -142,12 +147,19 @@ function attributionBefore(node: Node): Node[] {
   return prev && attribution.test(prev.textContent!) ? [prev, ...between] : [];
 }
 
-/** The nodes that make up each piece of quoted history, outermost only. Forwarded messages are left alone. */
-function findQuotes(body: HTMLElement): Node[][] {
+/**
+ * The nodes that make up each piece of quoted history to collapse, outermost only.
+ * A quote you can't read anywhere else stays: a forwarded message, or (`quoteIsNew`) the outermost quote of
+ * a thread's first email. Only the older history inside such a quote collapses.
+ */
+function findQuotes(body: HTMLElement, quoteIsNew: boolean): Node[][] {
   const groups: Node[][] = [];
   const seen: Node[] = [];
+  const kept: Node[] = [];
   for (const el of body.querySelectorAll(".gmail_quote, blockquote, #divRplyFwdMsg")) {
     if (seen.some((s) => s.contains(el))) continue;
+    // Gmail puts the quoted text in a blockquote inside the quote's own block: one quote, not history within it.
+    if (el.matches(".gmail_quote > blockquote.gmail_quote") && kept.includes(el.parentElement!)) continue;
     let group: Node[];
     if (el.id === "divRplyFwdMsg") {
       // Outlook: a rule, the From/Sent header, then the old message as following siblings.
@@ -161,15 +173,20 @@ function findQuotes(body: HTMLElement): Node[][] {
       if (!cited && !before.length) continue;
       group = [...before, el];
     }
+    const outermost = !kept.some((k) => k.contains(el));
+    if ((quoteIsNew && outermost) || forwarded.test(group.map((n) => n.textContent).join(" "))) {
+      kept.push(...group);
+      continue;
+    }
     seen.push(...group);
-    if (!forwarded.test(group.map((n) => n.textContent).join(" "))) groups.push(group);
+    groups.push(group);
   }
   return groups;
 }
 
 /** Marks quoted history so it can be measured and removed; bare text nodes get a span to carry the mark. */
-function markQuotes(body: HTMLElement): boolean {
-  const groups = findQuotes(body);
+function markQuotes(body: HTMLElement, quoteIsNew: boolean): boolean {
+  const groups = findQuotes(body, quoteIsNew);
   for (const node of groups.flat()) {
     if (node.nodeType === Node.ELEMENT_NODE) (node as Element).setAttribute(quoteMark, "");
     else {
@@ -209,7 +226,7 @@ function keepOn(body: HTMLElement, from: Element, attributes: string[]) {
 }
 
 /** Sanitises an email's HTML and applies the privacy and quote choices. */
-export function prepareHtml(html: string, { allowImages, showQuoted, recipient }: PrepareOptions): PreparedHtml {
+export function prepareHtml(html: string, { allowImages, showQuoted, quoteIsNew = false, recipient }: PrepareOptions): PreparedHtml {
   const root = DOMPurify.sanitize(html, {
     WHOLE_DOCUMENT: true,
     RETURN_DOM: true,
@@ -278,7 +295,7 @@ export function prepareHtml(html: string, { allowImages, showQuoted, recipient }
     if (!/^(https?:|mailto:)/i.test(a.getAttribute("href")!.trim())) a.removeAttribute("href");
   }
 
-  const hasQuoted = markQuotes(body);
+  const hasQuoted = markQuotes(body, quoteIsNew);
   for (const el of body.querySelectorAll(`[${quoteMark}]`)) {
     if (hasQuoted && !showQuoted) el.remove();
     else el.removeAttribute(quoteMark);

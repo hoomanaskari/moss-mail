@@ -7,3 +7,11 @@ export function stripRe(subject: string) {
 export function replySubject(subject: string) {
   return `Re: ${stripRe(subject)}`;
 }
+
+/**
+ * The subject of an answer: it starts with "Re:". A forward ("Fwd: Re: …") doesn't.
+ * Other languages' prefixes ("AW:") read as not a reply, which only ever shows more of an email, never less.
+ */
+export function isReplySubject(subject: string) {
+  return /^\s*re\s*:/i.test(subject);
+}

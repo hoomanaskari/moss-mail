@@ -445,3 +445,18 @@ describe("strict remote images", () => {
     expect(frame().srcdoc).toContain('src="https://images.example.test/photo.jpg"');
   });
 });
+
+describe("a quote that is new to you (the thread's first email, such as a forward)", () => {
+  it("shows it without being asked, in an HTML email", () => {
+    setup({ html: `<div>FYI</div><blockquote type="cite">The invoice is due.</blockquote>` }, { quoteIsNew: true });
+    expect(frame().srcdoc).toContain("The invoice is due.");
+    expect(screen.queryByRole("button", { name: /quoted text/ })).not.toBeInTheDocument();
+  });
+
+  it("shows it without being asked, in a plain-text email, and can still hide it", async () => {
+    const { user } = setup({ text: "FYI\n\n> The invoice is due." }, { quoteIsNew: true });
+    expect(screen.getByText(/The invoice is due/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Hide quoted text" }));
+    expect(screen.queryByText(/The invoice is due/)).not.toBeInTheDocument();
+  });
+});

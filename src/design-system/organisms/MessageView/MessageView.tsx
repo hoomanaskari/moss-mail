@@ -32,6 +32,8 @@ export interface MessageViewProps {
   senderCard?: ReactNode;
   /** Opens a forward you sent of this email, by its thread id. */
   onOpenForward?: (threadId: string) => void;
+  /** Nothing earlier in the thread holds what this email quotes, so its quote starts open (see `EmailBody`). */
+  quoteIsNew?: boolean;
 }
 
 const noop = () => {};
@@ -83,6 +85,7 @@ export function MessageView({
   onOpenAttachment = noop,
   senderCard,
   onOpenForward = noop,
+  quoteIsNew,
 }: MessageViewProps) {
   const name = message.from.name;
   return (
@@ -129,6 +132,7 @@ export function MessageView({
         imagesShown={imagesShown}
         {...senderImages(message)}
         recipient={account.address}
+        quoteIsNew={quoteIsNew}
         onShowImages={onShowImages}
         onAllowImages={onAllowImages}
         onOpenLink={onOpenLink}

@@ -29,6 +29,7 @@ import { quickSignature, replyPick, useQuickReply } from "../state/quickReply";
 import { chosenReason, offered, pickReason, useSignatures } from "../state/signatures";
 import { useAskPanel } from "../state/askPanel";
 import { threadDraft, useDrafts } from "../state/drafts";
+import { isReplySubject } from "../lib/subject";
 import { listTime } from "../lib/time";
 import { escapeHtml } from "../lib/textHtml";
 import { accountFor, openThread, useStore, visibleBlocked, visibleDone, visibleThreads, type Draft, type SendStep, type UndoStep } from "../state/store";
@@ -37,7 +38,7 @@ import { SummariseButton, SummaryPanel } from "./SummaryPanel";
 import { reasonsFor } from "../lib/why";
 
 /** An earlier message opened in full; its recipients open on their own, apart from the newest message's. */
-const EarlierMessage = memo(function EarlierMessage({ message, account }: { message: Message; account: Account }) {
+const EarlierMessage = memo(function EarlierMessage({ message, account, first }: { message: Message; account: Account; first: boolean }) {
   const [recipientsOpen, setRecipientsOpen] = useState(false);
   const theme = useStore((s) => s.theme);
   const readingSize = useStore((s) => s.readingSize);
@@ -55,6 +56,7 @@ const EarlierMessage = memo(function EarlierMessage({ message, account }: { mess
       onShowImages={() => showImages(message.id)}
       onAllowImages={() => allowImages(message.id)}
       onOpenForward={openFound}
+      quoteIsNew={first}
     />
   );
 });
@@ -316,7 +318,7 @@ export function ThreadScreen() {
           key={thread.id}
           messages={[...thread.messages, ...copies].slice(0, -1)}
           youAddress={account.address}
-          renderMessage={(m) => <EarlierMessage message={m} account={account} />}
+          renderMessage={(m) => <EarlierMessage message={m} account={account} first={m === thread.messages[0]} />}
           reveal={ask.reveal}
         />
         {copies.length ? (
@@ -348,6 +350,9 @@ export function ThreadScreen() {
               onAllowImages={() => s.allowImages(message.id)}
               onOpenAttachment={(index) => s.openAttachment(message.id, index)}
               onOpenForward={s.openFound}
+              // A thread's first email quotes what you can't read above it (a forward, say), so its quote starts open.
+              // Unless it answers an email that isn't here: that quote is old news.
+              quoteIsNew={thread.messages.length === 1 && !isReplySubject(thread.fullSubject ?? thread.subject)}
               senderCard={
                 <ContactPanel person={thread.from} recent={thread.recent} insight={thread.insight} between={thread.between} />
               }
