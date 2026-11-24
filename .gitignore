@@ -55,3 +55,6 @@ AuthKey_*
 # Editor settings.
 .vscode/
 .idea/
+
+# The Pencil design file stays on the owner's Mac: it carries a private sharing ID.
+*.pen

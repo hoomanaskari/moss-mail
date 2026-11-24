@@ -25,7 +25,7 @@ The full rules are in [AGENTS.md](AGENTS.md). The short version:
 1. **Test first.** Write the test, see it fail for the right reason, then write the code that makes it pass.
 2. **Keep coverage as high as it goes.** New code ships with its tests. `pnpm check` fails if coverage drops.
 3. **Run `pnpm check` before you open a pull request.** There is no CI server, so this is the check.
-4. **Follow `design.pen`.** Every colour, size and word on screen comes from the design. If a screen isn't designed yet, say so in the pull request.
+4. **Follow the design.** Every colour, size and word on screen comes from `design.pen`, a Pencil file the maintainer keeps outside this repository. Use the design system's tokens and parts, which mirror it. If a screen isn't designed yet, say so in the pull request.
 
 ## Writing for Moss
 

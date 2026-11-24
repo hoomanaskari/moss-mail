@@ -218,7 +218,7 @@ src/screens/   Inbox, Thread, Compose, Settings and the rest
 
 ### Design fidelity
 
-`design.pen` is the source of truth: every token, size and colour comes from it. Dev builds have a link to each designed state, used to compare the app with the design pixel by pixel:
+`design.pen` is the source of truth: every token, size and colour comes from it. It is a Pencil file kept by the maintainer, not in this repository; its values are in `src/design-system/tokens/`. Dev builds have a link to each designed state, used to compare the app with the design pixel by pixel:
 
 ```
 http://localhost:1420/?scene=split-inbox&theme=light

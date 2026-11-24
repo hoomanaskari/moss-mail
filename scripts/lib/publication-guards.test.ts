@@ -9,18 +9,13 @@ it("keeps realistic Resend keys out of the account demo", () => {
   expect(demo).not.toMatch(/\bre_[A-Za-z0-9]{20,}\b/);
 });
 
-it("keeps private Pencil sharing identity out of the public design source", () => {
-  const design = JSON.parse(readFileSync("design.pen", "utf8"));
-  expect(Object.hasOwn(design, "fileToken")).toBe(false);
-  expect(design.children.length).toBeGreaterThan(0);
-});
-
-it("ignores credential temporary files and mailbox process locks", () => {
+// design.pen carries a private Pencil sharing ID, so the design file stays out of the public source.
+it("ignores credential temporary files, mailbox process locks and the Pencil design file", () => {
   const root = mkdtempSync(join(tmpdir(), "moss-ignore-"));
   try {
     execFileSync("git", ["init", "-q"], { cwd: root });
     writeFileSync(join(root, ".gitignore"), readFileSync(".gitignore"));
-    const privatePaths = ["secrets.bin", "secrets.key", "secrets.bin.tmp", "secrets.key.tmp", "mail/moss.session.lock", "mail/mail.sqlite", "mail/mail.db", "mail/mail.db-wal", "mail/mail.db-shm", "mail/mail.db-journal", "mail/mail.sqlite-journal", "mail/mail.sqlite3-journal", ".playwright-mcp/live-mail.png", ".claude/worktrees/private-mail/src/mail.ts", ".env.production"];
+    const privatePaths = ["secrets.bin", "secrets.key", "secrets.bin.tmp", "secrets.key.tmp", "mail/moss.session.lock", "mail/mail.sqlite", "mail/mail.db", "mail/mail.db-wal", "mail/mail.db-shm", "mail/mail.db-journal", "mail/mail.sqlite-journal", "mail/mail.sqlite3-journal", ".playwright-mcp/live-mail.png", ".claude/worktrees/private-mail/src/mail.ts", ".env.production", "design.pen"];
     const ignored = execFileSync("git", ["check-ignore", "--stdin"], { cwd: root, encoding: "utf8", input: [...privatePaths, "src/main.ts", ".env.example"].join("\n") + "\n" }).trim().split("\n");
     expect(ignored).toEqual(privatePaths);
   } finally { rmSync(root, { recursive: true, force: true }); }
