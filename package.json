@@ -1,7 +1,7 @@
 {
   "name": "moss-mail",
   "private": true,
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Moss: a calm, keyboard-first email client with private AI.",
   "license": "MIT",
   "type": "module",
