@@ -144,6 +144,10 @@ export interface MailBackend {
   deleteThread(id: string): Promise<void>;
   /** Undoes a delete: back where it was, in the list or the Done list. */
   restoreThread(id: string): Promise<void>;
+  /** Trash: threads you deleted here, newest first. */
+  trashThreads(): Promise<Thread[]>;
+  /** Out of Trash and into the inbox, wherever it was deleted from. */
+  restoreToInbox(id: string): Promise<void>;
   /** Marks every message in the thread read, or unread. */
   markRead(id: string, read: boolean): Promise<void>;
   /** Blocked mail, newest first, from every account's Blocked folder. */
@@ -347,6 +351,8 @@ export const demoMail: MailBackend = {
   markNotDone: done,
   deleteThread: done,
   restoreThread: done,
+  trashThreads: async () => [],
+  restoreToInbox: done,
   markRead: done,
   blockedThreads: async () => [],
   blockSender: done,

@@ -33,6 +33,7 @@ import { isReplySubject } from "../lib/subject";
 import { listTime } from "../lib/time";
 import { escapeHtml } from "../lib/textHtml";
 import { accountFor, openThread, useStore, visibleBlocked, visibleDone, visibleThreads, type Draft, type SendStep, type UndoStep } from "../state/store";
+import { restoreToInbox, useTrash, visibleTrash } from "../state/trash";
 import styles from "./ThreadScreen.module.css";
 import { SummariseButton, SummaryPanel } from "./SummaryPanel";
 import { reasonsFor } from "../lib/why";
@@ -186,15 +187,17 @@ export function ThreadScreen() {
   );
   const ask = useAskPanel(useShallow((a) => ({ open: a.open, toggle: a.toggle, reveal: a.reveal })));
   const drafts = useDrafts((d) => d.drafts);
+  const trash = useTrash((t) => t.threads);
   const thread = s.thread;
   const { threads, doneThreads, blockedThreads, accountFilter, addressFilter, split } = s;
   // Where it sits among its peers: worked out again only when the lists change.
   const peers = useMemo(() => {
     if (!thread) return [];
+    if (trash.some((t) => t.id === thread.id)) return visibleTrash(trash, accountFilter);
     if (blockedThreads.some((t) => t.id === thread.id)) return visibleBlocked({ blockedThreads, accountFilter });
     if (thread.doneAt !== undefined) return visibleDone({ doneThreads, accountFilter });
     return visibleThreads({ threads, accountFilter, split, addressFilter }).filter((t) => t.section === thread.section);
-  }, [thread, threads, doneThreads, blockedThreads, accountFilter, addressFilter, split]);
+  }, [thread, threads, doneThreads, blockedThreads, trash, accountFilter, addressFilter, split]);
   const latest = thread?.messages.at(-1);
   const shownMessage = useMemo(() => latest && withPreviews(latest, s.previews), [latest, s.previews]);
   // Your replies on their way read as the end of the conversation, as they will once gone.
@@ -203,6 +206,7 @@ export function ThreadScreen() {
   if (!thread) return null;
   const done = thread.doneAt !== undefined;
   const blocked = blockedThreads.some((t) => t.id === thread.id);
+  const deleted = trash.some((t) => t.id === thread.id);
   const domain = domainOf(thread.from.email);
   const blockableDomain = domain && !isPublicDomain(domain) ? domain : undefined;
 
@@ -214,13 +218,15 @@ export function ThreadScreen() {
   const blockedAddress = toOther && addressOf(account, to)?.blocked ? to : undefined;
   const unknownAddress = toOther && !blockedAddress && !sendingAddresses(account).some((a) => a.email === to);
   const position = peers.findIndex((t) => t.id === thread.id) + 1;
-  // Back goes to where you opened it: the Done list, Blocked, Search, or the split it is in.
+  // Back goes to where you opened it: the Done list, Blocked, Trash, Search, or the split it is in.
   const from = s.history.at(-1);
   const backLabel =
     from === "done"
       ? "Done"
       : from === "blocked"
         ? "Blocked"
+        : from === "trash"
+          ? "Trash"
         : from === "search"
           ? "Search"
           : (splits.find((x) => x.id === thread.split)?.label ?? "Inbox");
@@ -254,6 +260,7 @@ export function ThreadScreen() {
                 onMove={blocked ? undefined : () => s.openMove(thread.id)}
                 // Blocked mail stays in the Blocked folder; unblock it first.
                 onDelete={blocked ? undefined : () => s.deleteThread(thread.id)}
+                onRestore={deleted ? () => restoreToInbox(thread.id) : undefined}
               />
               <span className={styles.divider} />
               <div className={styles.position}>

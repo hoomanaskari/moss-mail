@@ -1029,7 +1029,7 @@ impl Engine {
                 ThreadChange::Delete => {
                     if targets.trash.is_empty() { vec![] } else { vec![ServerChange::Trash { message_ids: targets.trash }] }
                 }
-                ThreadChange::Restore => {
+                ThreadChange::Restore | ThreadChange::RestoreToInbox => {
                     let mut changes = Vec::new();
                     if !targets.untrash_inbox.is_empty() { changes.push(ServerChange::Untrash { message_ids: targets.untrash_inbox, to_inbox: true }); }
                     if !targets.untrash_archive.is_empty() { changes.push(ServerChange::Untrash { message_ids: targets.untrash_archive, to_inbox: false }); }
@@ -1061,6 +1061,16 @@ impl Engine {
     /// Undo deletion, preserving the original Inbox or archive destination.
     pub fn restore_thread(&self, thread_id: &str) -> Result<()> {
         self.change_thread_state(thread_id, moss_store::ThreadChange::Restore)
+    }
+
+    /// Out of Trash and into the inbox, here and on the server, wherever it was deleted from.
+    pub fn restore_to_inbox(&self, thread_id: &str) -> Result<()> {
+        self.change_thread_state(thread_id, moss_store::ThreadChange::RestoreToInbox)
+    }
+
+    /// Trash: threads you deleted here, newest first, for one account or all of them.
+    pub fn trash_threads(&self, account: Option<&str>, limit: usize) -> Result<Vec<ThreadSummary>> {
+        Ok(self.shared.store().list_trash(account, limit, self.shared.now())?)
     }
 
     /// Done threads, most recently done first, for one account or all of them.

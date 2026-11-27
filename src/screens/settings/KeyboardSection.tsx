@@ -37,6 +37,7 @@ const right: Group[] = [
     keys: [
       ["Done, or not done again", "E"],
       ["Delete (to Trash)", "⌫"],
+      ["Back to inbox, from Trash", "E"],
       ["Delete a search result", "⌘⌫"],
       ["Remind me", "H"],
       ["Remind me if no reply", "⇧H"],

@@ -8,6 +8,7 @@ import { loadDrafts, reloadDrafts } from "../state/drafts";
 import { loadScheduled, requestScheduledRefresh, scheduledEvent, useScheduled } from "../state/scheduled";
 import { useSignatures } from "../state/signatures";
 import { loadBlocked, loadDone, reloadThreads, useStore, visibleThreads } from "../state/store";
+import { loadTrash } from "../state/trash";
 
 export { reloadThreads };
 import type { SyncSnapshot } from "./accountSetup";
@@ -40,7 +41,7 @@ export const useSync = create<SyncState>()(() => ({ progress: {}, problems: {} }
 
 let pending: ReturnType<typeof setTimeout> | undefined;
 
-/** New mail comes in batches; reload once they settle. The Done or Blocked list too, while it is on screen. */
+/** New mail comes in batches; reload once they settle. The Done, Blocked or Trash list too, while it is on screen. */
 function reloadSoon() {
   clearTimeout(pending);
   pending = setTimeout(() => {
@@ -48,6 +49,7 @@ function reloadSoon() {
     const { view } = useStore.getState();
     if (view === "done") quietly(loadDone());
     if (view === "blocked") quietly(loadBlocked());
+    if (view === "trash") quietly(loadTrash());
   }, 300);
 }
 

@@ -454,3 +454,19 @@ export const searchIndex: import("../lib/search").SearchDoc[] = [
   { id: "s-onboarding", threadId: "onboarding-v3", accountId: "work", from: people.lena, subject: "Onboarding flow v3", summary: "3 comments to answer, budget for testing agreed", when: "Sat", date: "2026-10-31", relevance: 0.5, hasAttachment: false },
   { id: "s-lunch", threadId: "sunday-lunch", accountId: "personal", from: people.mum, subject: "Sunday lunch", summary: "Are you coming, and can you bring dessert?", when: "Sat", date: "2026-10-31", relevance: 0.5, hasAttachment: false },
 ];
+
+/** Mail Maya deleted, newest first, until she puts it back or her provider empties Trash. */
+export const trashThreads: Thread[] = [
+  simple("offsite-poll", "work", "info", people.lena, "Offsite lunch poll", "Pick a place by Friday", "9:15 AM", {
+    body: ["Hi all,", "Pick a place for the offsite lunch by Friday. The poll is in the team channel.", "Lena"],
+    lastMessageAt: ago(45),
+  }),
+  simple("gym-renewal", "personal", "info", p("Harbour Gym", "hello@harbourgym.example"), "Your membership renews soon", "Renews on 1 December", "Mon", {
+    body: ["Your membership renews on 1 December. Nothing to do if you want to stay."],
+    lastMessageAt: ago(60 * 24 * 2),
+  }),
+  simple("old-quote", "studio", "reply", people.priya, "Quote for the film titles", "Updated quote attached", "Oct 20", {
+    body: ["Hi Maya,", "Here is the updated quote for the film titles. Happy to talk it through.", "Priya"],
+    lastMessageAt: ago(60 * 24 * 14),
+  }),
+];

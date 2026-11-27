@@ -434,6 +434,30 @@ async fn done_archives_on_the_server_and_read_marks_it_seen() {
 }
 
 #[tokio::test(start_paused = true)]
+async fn trash_lists_deleted_mail_and_back_to_inbox_moves_it_there_even_from_done() {
+    let s = setup();
+    s.inbox(1, "a@x", "Budget", NOW);
+    s.gmail().await;
+    s.synced().await;
+    let id = s.thread_id("Budget");
+    s.engine.mark_done(&id).unwrap();
+    s.engine.delete_thread(&id).unwrap();
+    let trash = s.engine.trash_threads(None, 10).unwrap();
+    assert_eq!(trash.iter().map(|t| t.id.as_str()).collect::<Vec<_>>(), [id.as_str()]);
+    assert!(s.engine.trash_threads(Some("other"), 10).unwrap().is_empty());
+    settle().await;
+    let before = s.fake.changes().len();
+
+    s.engine.restore_to_inbox(&id).unwrap();
+    assert!(s.engine.trash_threads(None, 10).unwrap().is_empty());
+    assert!(s.engine.done_threads(None, 10).unwrap().is_empty());
+    assert_eq!(s.subjects(), ["Budget"]);
+    settle().await;
+    assert_eq!(s.fake.changes()[before..], ["untrash a@x to inbox"]);
+    assert!(s.engine.restore_to_inbox("99").is_err());
+}
+
+#[tokio::test(start_paused = true)]
 async fn delete_moves_to_trash_on_the_server_and_undo_brings_it_back() {
     let s = setup();
     s.inbox(1, "a@x", "Budget", NOW);

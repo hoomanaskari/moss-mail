@@ -7,6 +7,7 @@ import { ComposeScreen } from "./screens/ComposeScreen";
 import { DoneScreen } from "./screens/DoneScreen";
 import { DraftsScreen } from "./screens/DraftsScreen";
 import { ScheduledScreen } from "./screens/ScheduledScreen";
+import { TrashScreen } from "./screens/TrashScreen";
 import { InboxScreen } from "./screens/InboxScreen";
 import { InboxZeroScreen } from "./screens/InboxZeroScreen";
 import { AddAccountScreen } from "./screens/AddAccountScreen";
@@ -112,6 +113,7 @@ function MailApp() {
         {view === "drafts" && <DraftsScreen />}
         {view === "senders" && <SendersScreen />}
         {view === "scheduled" && <ScheduledScreen />}
+        {view === "trash" && <TrashScreen />}
       </ScreenErrorBoundary>
       <UndoToast />
       <CredentialCleanupNotice />

@@ -7,6 +7,7 @@ import { useScheduled, type ScheduledEmail } from "./scheduled";
 import { resetAskPanel, turnsOf, useAskPanel } from "./askPanel";
 import { useSearch } from "./search";
 import { useStore } from "./store";
+import { useTrash } from "./trash";
 import { pristineUpdates, useUpdates } from "./updates";
 import { installedMoss, mossDev, useAppIdentity } from "../services/appIdentity";
 
@@ -182,14 +183,14 @@ describe("paletteGroups", () => {
 
   it("filters Go to, but shows every account when nothing matches", () => {
     expect(group("personal", "Go to")).toEqual(["go-personal"]);
-    expect(group("zzzz", "Go to")).toEqual(["go-all", "go-work", "go-personal", "go-drafts", "go-scheduled", "go-blocked", "go-senders"]);
+    expect(group("zzzz", "Go to")).toEqual(["go-all", "go-work", "go-personal", "go-drafts", "go-scheduled", "go-trash", "go-blocked", "go-senders"]);
     expect(group("blocked", "Go to")).toEqual(["go-blocked", "go-senders"]);
     expect(group("senders", "Go to")).toEqual(["go-senders"]);
   });
 
   it("numbers the first nine accounts ⌘1–⌘9", () => {
     const go = paletteGroups("").find((g) => g.title === "Go to")!.items;
-    expect(go.map((c) => c.shortcut)).toEqual(["⌘0", "⌘1", "⌘2", undefined, undefined, "⌘⇧B", undefined]);
+    expect(go.map((c) => c.shortcut)).toEqual(["⌘0", "⌘1", "⌘2", undefined, undefined, undefined, "⌘⇧B", undefined]);
   });
 
 
@@ -335,6 +336,19 @@ describe("senders in the palette", () => {
     resetStore([thread("n", { from: { name: "Pat", email: "pat@gmail.com", initials: "P" }, sender: "new" })]);
     expect(group("block", "Commands")).not.toContain("block-domain");
     expect(group("", "Commands")).not.toContain("accept-domain");
+  });
+
+  it("Go to opens Trash, where Back to inbox puts the email in context back", () => {
+    expect(items("trash", "Go to")[0]).toMatchObject({ id: "go-trash", label: "Trash (deleted emails)" });
+    expect(group("deleted", "Go to")).toEqual(["go-trash"]);
+    expect(group("", "Commands")).not.toContain("restore");
+    useTrash.setState({ threads: [thread("x", { subject: "Old invoice" })] });
+    run("", "Go to", "go-trash");
+    expect(s().view).toBe("trash");
+    expect(items("", "Commands")[0]).toMatchObject({ id: "restore", label: "Back to inbox", shortcut: "E" });
+    run("", "Commands", "restore");
+    expect(s().threads.map((t) => t.id)).toContain("x");
+    expect(group("", "Commands")).not.toContain("restore");
   });
 
   it("blocked mail offers Unblock, and Go to opens the Blocked list", () => {

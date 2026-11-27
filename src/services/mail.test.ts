@@ -42,6 +42,7 @@ describe("the demo mailbox", () => {
     expect(await demoMail.thread("x")).toBeUndefined();
     expect(await demoMail.doneThreads()).toEqual([]);
     expect(await demoMail.blockedThreads()).toEqual([]);
+    expect(await demoMail.trashThreads()).toEqual([]);
     await demoMail.blockSender("x", true);
     await demoMail.acceptSender("x", true);
     await demoMail.unblockSender("x");

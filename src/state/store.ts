@@ -22,7 +22,7 @@ import { textToHtml } from "../lib/textHtml";
 import { parseMailLink } from "../lib/mailLink";
 import { plainText } from "../lib/markdown";
 
-export type View = "inbox" | "thread" | "compose" | "zero" | "add-account" | "settings" | "search" | "done" | "blocked" | "drafts" | "senders" | "scheduled";
+export type View = "inbox" | "thread" | "compose" | "zero" | "add-account" | "settings" | "search" | "done" | "blocked" | "drafts" | "senders" | "scheduled" | "trash";
 export type SettingsSection = "accounts" | "signatures" | "appearance" | "ai" | "storage" | "keyboard";
 export type ComposeMode = "reply" | "reply-all" | "forward" | "new";
 export type Theme = "dark" | "light";
@@ -758,8 +758,8 @@ export const useStore = create<State>()((set, get) => ({
     const done = !listed && s.doneThreads.some((t) => t.id === target);
     const blocked = !listed && s.blockedThreads.some((t) => t.id === target);
     set({
-      // Opened from Search, the Done list, Blocked or Drafts: Esc goes back there.
-      ...(s.view === "search" || s.view === "done" || s.view === "blocked" || s.view === "drafts" ? goTo(s, "thread") : { view: "thread" as const }),
+      // Opened from Search, the Done list, Blocked, Trash or Drafts: Esc goes back there.
+      ...(s.view === "search" || s.view === "done" || s.view === "blocked" || s.view === "trash" || s.view === "drafts" ? goTo(s, "thread") : { view: "thread" as const }),
       openThreadId: target,
       // One no list holds leaves every list's cursor where it was.
       ...(blocked ? { blockedCursorId: target } : done ? { doneCursorId: target } : listed && { cursorId: target }),

@@ -11,6 +11,7 @@ import { useQuickReply } from "../state/quickReply";
 import { useSignatures } from "../state/signatures";
 import { useAskPanel } from "../state/askPanel";
 import { useStore, type SendStep } from "../state/store";
+import { openFromTrash, openTrash, useTrash } from "../state/trash";
 import { ThreadScreen } from "./ThreadScreen";
 import { Profiler } from "react";
 
@@ -761,6 +762,22 @@ describe("ThreadScreen: senders", () => {
     await userEvent.click(within(screen.getByRole("region", { name: "You blocked this sender" })).getByRole("button", { name: "UnblockU" }));
     expect(s().threads.map((t) => t.id)).toEqual(["x"]);
     expect(s().blockedThreads.map((t) => t.id)).toEqual(["y"]);
+  });
+
+  it("deleted mail opened from Trash offers only Back to inbox, which puts it there", async () => {
+    resetStore([thread("a")]);
+    useTrash.setState({ threads: [thread("x", { subject: "Old invoice" }), thread("y")] });
+    openTrash();
+    openFromTrash("x");
+    render(<ThreadScreen />);
+    expect(screen.getByRole("button", { name: /Trash/ })).toBeInTheDocument();
+    expect(screen.getByText("1 of 2")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "DoneE" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "DeleteBackspace" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Back to inboxE" }));
+    expect(s().threads.map((t) => t.id)).toEqual(["x", "a"]);
+    expect(useTrash.getState().threads.map((t) => t.id)).toEqual(["y"]);
+    expect(screen.getByRole("button", { name: "DoneE" })).toBeInTheDocument();
   });
 
   it("an email you forwarded says so, and opens the forward from there or from an earlier message", async () => {

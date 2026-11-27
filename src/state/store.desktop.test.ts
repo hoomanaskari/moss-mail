@@ -13,5 +13,7 @@ describe("store in the desktop app", () => {
     expect(s.doneThreads).toEqual([]);
     expect(s.blockedThreads).toEqual([]);
     expect(s.cursorId).toBeUndefined();
+    const { useTrash } = await import("./trash");
+    expect(useTrash.getState().threads).toEqual([]);
   });
 });

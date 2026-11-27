@@ -108,6 +108,12 @@ const DONE: &str = "(:account IS NULL OR t.account_id = :account)
     AND EXISTS (SELECT 1 FROM messages WHERE thread_id = t.id AND from_me = 0 AND deleted_from IS NULL)
     AND NOT EXISTS (SELECT 1 FROM messages WHERE thread_id = t.id AND blocked = 1)";
 
+/// Threads in Trash: every message deleted here (a new email brings the thread back), and not
+/// blocked, which the Blocked list shows instead.
+const TRASH: &str = "(:account IS NULL OR t.account_id = :account)
+    AND NOT EXISTS (SELECT 1 FROM messages WHERE thread_id = t.id AND deleted_from IS NULL)
+    AND NOT EXISTS (SELECT 1 FROM messages WHERE thread_id = t.id AND blocked = 1)";
+
 /// A thread row, with the To and Cc addresses (lowercase) of its latest email from someone
 /// else, to tell which of your addresses it came to.
 fn summary(r: &Row) -> rusqlite::Result<(ThreadSummary, Vec<String>)> {
@@ -272,6 +278,11 @@ impl Store {
         let params = named_params! {":account": account, ":limit": limit as i64, ":now": now};
         let rows = stmt.query_map(params, summary)?;
         self.summaries(rows, &mut Accounts::default())
+    }
+
+    /// Trash: threads you deleted here, newest email first, for one account or all of them.
+    pub fn list_trash(&self, account: Option<&str>, limit: usize, now: i64) -> Result<Vec<ThreadSummary>> {
+        self.list_where(TRASH, account, limit, now)
     }
 
     /// Threads matching `filter` (which uses `:account`), newest first.
@@ -698,6 +709,24 @@ mod tests {
         let done = done_list(&store);
         assert_eq!(ids(&done), [thread.as_str()]);
         assert_eq!(done[0].done_at, Some(NOV_1 + 5));
+    }
+
+    #[test]
+    fn trash_holds_deleted_threads_newest_first_until_restored_or_answered() {
+        let mut store = store_with_work();
+        let older = add(&mut store, "a", mail(), 0);
+        let newer = add(&mut store, "b", mail().subject("Lunch"), 10);
+        let blocked = add(&mut store, "c", mail().subject("Offer"), 20);
+        add(&mut store, "d", mail().subject("Kept"), 30);
+        for t in [&older, &newer, &blocked] { store.delete_thread(t).unwrap(); }
+        store.conn.execute("UPDATE messages SET blocked = 1 WHERE thread_id = ?1", [parse_id(&blocked)]).unwrap();
+        let trash = |account: Option<&str>, limit| store.list_trash(account, limit, NOV_1).unwrap();
+        assert_eq!(ids(&trash(None, 10)), [newer.as_str(), older.as_str()]);
+        assert_eq!(ids(&trash(Some("work"), 1)), [newer.as_str()]);
+        assert!(trash(Some("other"), 10).is_empty());
+        store.restore_thread(&newer).unwrap();
+        add(&mut store, "e", mail().reply_to(&["a@x"]), 40);
+        assert!(store.list_trash(None, 10, NOV_1).unwrap().is_empty());
     }
 
     #[test]

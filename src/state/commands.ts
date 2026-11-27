@@ -44,6 +44,7 @@ import { useDrafts, visibleDrafts } from "./drafts";
 import { openScheduled, openSendLater, useScheduled, visibleScheduled } from "./scheduled";
 import { useSearch } from "./search";
 import { accountFor, findThread, useStore } from "./store";
+import { inTrash, openTrash, restoreToInbox, trashCursor } from "./trash";
 import { addressCounts, addressOf, sendingAddresses } from "../lib/addresses";
 import { SEP } from "../lib/text";
 import { dayBefore, dayBeforeDate, remindTime, weekdayOf } from "../lib/time";
@@ -55,7 +56,8 @@ import { useAppIdentity } from "../services/appIdentity";
 /** The email the palette acts on: the open one, or the one under the cursor. */
 export function contextThread() {
   const s = useStore.getState();
-  if (s.view === "zero") return undefined;
+  // Deleted mail offers only Back to inbox (`trashCommands`).
+  if (s.view === "zero" || s.view === "trash" || (s.view === "thread" && inTrash(s.openThreadId))) return undefined;
   const search = useSearch.getState();
   const id =
     s.view === "thread" || s.view === "compose"
@@ -75,6 +77,13 @@ function words(q: string) {
     .toLowerCase()
     .split(/\W+/)
     .filter((w) => w.length > 2);
+}
+
+/** In Trash, or reading an email there: put it back in the inbox. */
+function trashCommands(): PaletteCommand[] {
+  const view = useStore.getState().view;
+  if ((view !== "trash" && view !== "thread") || !inTrash(trashCursor())) return [];
+  return [{ id: "restore", label: "Back to inbox", icon: Inbox, shortcut: "E", run: () => restoreToInbox() }];
 }
 
 /** Keep commands that share a word with the query. With no query, or `fallback` and no match, show everything. */
@@ -325,13 +334,14 @@ export function paletteGroups(q: string): PaletteGroup[] {
         ])),
     { id: "go-drafts", label: drafts ? `Drafts${SEP}${drafts}` : "Drafts", icon: FilePen, run: s.openDrafts },
     { id: "go-scheduled", label: scheduled ? `Scheduled${SEP}${scheduled}` : "Scheduled", icon: Clock3, run: openScheduled },
+    { id: "go-trash", label: "Trash (deleted emails)", icon: Trash2, run: openTrash },
     { id: "go-blocked", label: "Blocked mail", icon: FolderLock, shortcut: "⌘⇧B", run: s.openBlocked },
     { id: "go-senders", label: "Blocked and accepted senders", icon: UserRoundX, run: s.openSenders },
   ];
 
   return [
     { title: "Ask AI", items: q.trim() ? aiSuggestions(q) : [] },
-    { title: "Commands", items: [...correctionCommands(q), ...senderCommands(q), ...addressCommands(q), ...(t ? onEmail : []), ...readCommand(q), ...moves.typed, ...deleteCommand(q), ...filter(general, q, false)] },
+    { title: "Commands", items: [...trashCommands(), ...correctionCommands(q), ...senderCommands(q), ...addressCommands(q), ...(t ? onEmail : []), ...readCommand(q), ...moves.typed, ...deleteCommand(q), ...filter(general, q, false)] },
     { title: "Go to", items: filter(goTo, q) },
   ];
 }

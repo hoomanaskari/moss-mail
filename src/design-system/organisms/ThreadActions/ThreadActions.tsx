@@ -1,4 +1,4 @@
-import { AlarmClock, ArrowRightLeft, Check, ChevronDown, RotateCcw, Trash2, Undo2, type LucideIcon } from "lucide-react";
+import { AlarmClock, ArrowRightLeft, Check, ChevronDown, Inbox, RotateCcw, Trash2, Undo2, type LucideIcon } from "lucide-react";
 import { cx } from "../../../lib/cx";
 import { Icon, Kbd } from "../../atoms";
 import { Popover } from "../../molecules";
@@ -19,6 +19,8 @@ export interface ThreadActionsProps {
   onDelete?: () => void;
   /** Opens the Move menu (M): to Important, or out of it. */
   onMove?: () => void;
+  /** Deleted mail: Back to inbox is all it offers. */
+  onRestore?: () => void;
 }
 
 /** The icon and key say what it does; the name is there for screen readers and the tooltip. */
@@ -33,7 +35,13 @@ function Action({ icon, label, keys, title = label, onClick }: { icon: LucideIco
 }
 
 /** What you can do with the open email, in the top bar beside the ↑/↓ position. */
-export function ThreadActions({ done, onDone, onRemind, onRemindNoReply, remindOpen, onRemindOpenChange, onDelete, onMove }: ThreadActionsProps) {
+export function ThreadActions({ done, onDone, onRemind, onRemindNoReply, remindOpen, onRemindOpenChange, onDelete, onMove, onRestore }: ThreadActionsProps) {
+  if (onRestore)
+    return (
+      <div className={styles.actions}>
+        <Action icon={Inbox} label="Back to inbox" keys="E" title="Put it back in your inbox" onClick={onRestore} />
+      </div>
+    );
   return (
     <div className={styles.actions}>
       {done ? (

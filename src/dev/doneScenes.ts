@@ -1,5 +1,6 @@
-/** Dev scenes for the Done list and Undo. */
+/** Dev scenes for the Done list, Trash and Undo. */
 import { useStore } from "../state/store";
+import { openFromTrash, openTrash, useTrash } from "../state/trash";
 import type { Scene } from "./scenes";
 
 export const doneScenes: Record<string, Scene> = {
@@ -16,6 +17,21 @@ export const doneScenes: Record<string, Scene> = {
     apply: () => {
       useStore.getState().openDone();
       useStore.getState().open("standup-notes");
+    },
+  },
+  "trash-list": { shows: /E puts one back in your inbox/, apply: () => openTrash() },
+  "trash-empty": {
+    shows: /Trash is empty/,
+    apply: () => {
+      useTrash.setState({ threads: [] });
+      openTrash();
+    },
+  },
+  "trash-email": {
+    shows: /Back to inbox/,
+    apply: () => {
+      openTrash();
+      openFromTrash("offsite-poll");
     },
   },
   "undo-toast": {

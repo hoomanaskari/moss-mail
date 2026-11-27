@@ -5,8 +5,9 @@ use rusqlite::params;
 use crate::codec::parse_id;
 use crate::{Error, Result, Store};
 
+/// `Restore` puts deleted mail back where it was (undo); `RestoreToInbox` back in the inbox.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ThreadChange { Done(bool), Read(bool), Delete, Restore }
+pub enum ThreadChange { Done(bool), Read(bool), Delete, Restore, RestoreToInbox }
 
 /// Server targets captured before local deletion metadata changes.
 #[derive(Debug, Default, PartialEq, Eq)]
@@ -30,8 +31,9 @@ impl Store {
             let account: String = store.conn.query_row("SELECT account_id FROM threads WHERE id=?1", [id], |row| row.get(0))?;
             if account != expected_account { return Err(Error::Invalid("This conversation belongs to a different account. Refresh it before changing it.".into())); }
             let captured = match action {
-                ThreadChange::Delete => store.capture_deletion(id, false)?,
-                ThreadChange::Restore => store.capture_deletion(id, true)?,
+                ThreadChange::Delete => store.capture_deletion(id, false, false)?,
+                ThreadChange::Restore => store.capture_deletion(id, true, false)?,
+                ThreadChange::RestoreToInbox => store.capture_deletion(id, true, true)?,
                 _ => CapturedDeletion { count: store.conn.query_row("SELECT count(*) FROM messages WHERE thread_id=?1", [id], |row| row.get::<_,i64>(0))? as u64, ..Default::default() },
             };
             if captured.count == 0 { return Ok(None); }
@@ -39,21 +41,23 @@ impl Store {
                 ThreadChange::Done(done) => store.mark_done(thread_id, done, now)?,
                 ThreadChange::Read(read) => store.mark_read(thread_id, read)?,
                 ThreadChange::Delete => store.delete_thread(thread_id)?,
-                ThreadChange::Restore => store.apply_restoration(id, captured.count)?,
+                ThreadChange::Restore => store.apply_restoration(id, captured.count, false)?,
+                ThreadChange::RestoreToInbox => store.apply_restoration(id, captured.count, true)?,
             }
             // Each action ends with its message UPDATE. No callback or other write can
             // intervene before checking the affected rows on this locked connection.
             if store.conn.changes() != captured.count { return Err(Error::Invalid("The conversation change was not saved completely.".into())); }
             let kind = match action {
                 ThreadChange::Done(true)=>crate::BatchKind::Done,ThreadChange::Done(false)=>crate::BatchKind::Undone,
-                ThreadChange::Read(_)=>crate::BatchKind::Read,ThreadChange::Delete=>crate::BatchKind::Delete,ThreadChange::Restore=>crate::BatchKind::Restore,
+                ThreadChange::Read(_)=>crate::BatchKind::Read,ThreadChange::Delete=>crate::BatchKind::Delete,ThreadChange::Restore|ThreadChange::RestoreToInbox=>crate::BatchKind::Restore,
             };
             store.queue_batch_in_transaction(&account, kind, &build(store, captured.targets)?, now)?;
             Ok(Some(account))
         })
     }
 
-    fn capture_deletion(&self, thread: i64, restore: bool) -> Result<CapturedDeletion> {
+    /// With `to_inbox`, every restored message goes to the inbox, wherever it was deleted from.
+    fn capture_deletion(&self, thread: i64, restore: bool, to_inbox: bool) -> Result<CapturedDeletion> {
         let mut statement = self.conn.prepare(
             "SELECT message_id,deleted_from FROM messages WHERE thread_id=?1
              AND ((?2 AND deleted_from IS NOT NULL) OR (NOT ?2 AND deleted_from IS NULL)) ORDER BY sent_at,id")?;
@@ -68,7 +72,7 @@ impl Store {
                 let from: String = row.get(1)?;
                 let inbox = match from.as_str() {
                     "inbox" => true,
-                    "done" => false,
+                    "done" => to_inbox,
                     _ => return Err(Error::Invalid("This conversation has an unknown saved deletion destination.".into())),
                 };
                 captured.any_inbox |= inbox;
@@ -81,12 +85,12 @@ impl Store {
         Ok(captured)
     }
 
-    fn apply_restoration(&self, thread: i64, expected: u64) -> Result<()> {
+    fn apply_restoration(&self, thread: i64, expected: u64, to_inbox: bool) -> Result<()> {
         let changed = self.conn.execute(
             "UPDATE messages SET deleted_from=NULL,
-             done=CASE WHEN deleted_from='inbox' THEN 0 ELSE done END,
-             done_at=CASE WHEN deleted_from='inbox' THEN NULL ELSE done_at END
-             WHERE thread_id=?1 AND deleted_from IS NOT NULL", [thread])?;
+             done=CASE WHEN ?2 OR deleted_from='inbox' THEN 0 ELSE done END,
+             done_at=CASE WHEN ?2 OR deleted_from='inbox' THEN NULL ELSE done_at END
+             WHERE thread_id=?1 AND deleted_from IS NOT NULL", params![thread, to_inbox])?;
         if changed as u64 != expected { return Err(Error::Invalid("The conversation restore was not saved completely.".into())); }
         Ok(())
     }
@@ -137,9 +141,9 @@ impl Store {
     pub fn restore_thread(&mut self, thread_id: &str) -> Result<Option<bool>> {
         self.delivery_transaction(|store| {
             let id = store.thread_pk(thread_id)?;
-            let captured = store.capture_deletion(id, true)?;
+            let captured = store.capture_deletion(id, true, false)?;
             if captured.count == 0 { return Ok(None); }
-            store.apply_restoration(id, captured.count)?;
+            store.apply_restoration(id, captured.count, false)?;
             Ok(Some(captured.any_inbox))
         })
     }
@@ -257,6 +261,21 @@ mod tests {
     }
 
     #[test]
+    fn restore_to_inbox_brings_every_deleted_message_back_open_wherever_it_was_deleted_from() {
+        let mut store=store_with_work();
+        let id=ingest(&mut store,"1",&mail().id("first@x").build()).thread_id;
+        ingest(&mut store,"2",&mail().id("second@x").reply_to(&["first@x"]).build());
+        store.conn.execute_batch("UPDATE messages SET deleted_from=CASE message_id WHEN 'first@x' THEN 'inbox' ELSE 'done' END,done=1,done_at=123;").unwrap();
+        let seen=std::cell::RefCell::new(vec![]);
+        let build=|_: &Store,targets: ThreadTargets| { seen.borrow_mut().push(targets); Ok(vec!["intent".into()]) };
+        assert_eq!(store.change_thread_with_changes(&id,"work",ThreadChange::RestoreToInbox,NOV_1,build).unwrap(),Some("work".into()));
+        assert_eq!(*seen.borrow(),[ThreadTargets {trash:vec![],untrash_inbox:vec!["first@x".into(),"second@x".into()],untrash_archive:vec![]}]);
+        assert_eq!(store.conn.query_row("SELECT count(*) FROM messages WHERE deleted_from IS NULL AND done=0 AND done_at IS NULL",[],|r|r.get::<_,i64>(0)).unwrap(),2);
+        assert_eq!(store.pending_changes("work").unwrap().len(),1);
+        assert_eq!(store.change_thread_with_changes(&id,"work",ThreadChange::RestoreToInbox,NOV_1,build).unwrap(),None);
+    }
+
+    #[test]
     fn mail_without_a_message_id_is_deleted_and_restored_here_but_not_looked_for_on_the_server() {
         let mut store=store_with_work();
         let id=ingest(&mut store,"1",&mail().id("first@x").build()).thread_id;
@@ -287,7 +306,7 @@ mod tests {
         assert_eq!(pending.len(), 1);
         assert!(store.drop_change(pending[0].0).unwrap());
         store.conn.execute("DELETE FROM messages", []).unwrap();
-        for action in [ThreadChange::Done(true), ThreadChange::Done(false), ThreadChange::Read(true), ThreadChange::Delete, ThreadChange::Restore] {
+        for action in [ThreadChange::Done(true), ThreadChange::Done(false), ThreadChange::Read(true), ThreadChange::Delete, ThreadChange::Restore, ThreadChange::RestoreToInbox] {
             called.set(false);
             let result = store.change_thread_with_changes(&id, "work", action, NOV_1, build).unwrap();
             assert_eq!(result, None);

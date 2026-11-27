@@ -165,6 +165,11 @@ export const tauriMail: MailBackend = {
   markNotDone: (id) => invoke("mark_not_done", { id }),
   deleteThread: (id) => invoke("delete_thread", { id }),
   restoreThread: (id) => invoke("restore_thread", { id }),
+  trashThreads: async () => {
+    const now = Date.now();
+    return (await invoke<RustSummary[]>("trash_threads", { account: null, limit: 200 })).map((t) => toThread(t, now));
+  },
+  restoreToInbox: (id) => invoke("restore_to_inbox", { id }),
   markRead: (id, read) => invoke("mark_read", { id, read }),
   blockedThreads: async () => {
     const now = Date.now();

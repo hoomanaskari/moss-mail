@@ -121,6 +121,15 @@ describe("the desktop mail backend", () => {
     expect(invoke).toHaveBeenLastCalledWith("blocked_threads", { account: null, limit: 200 });
   });
 
+  it("loads Trash, newest first, and puts an email back in the inbox", async () => {
+    invoke.mockResolvedValueOnce([summary]);
+    expect((await tauriMail.trashThreads())[0]).toMatchObject({ id: "7" });
+    expect(invoke).toHaveBeenLastCalledWith("trash_threads", { account: null, limit: 200 });
+    invoke.mockResolvedValueOnce(null);
+    await tauriMail.restoreToInbox("7");
+    expect(invoke).toHaveBeenLastCalledWith("restore_to_inbox", { id: "7" });
+  });
+
   it("blocks, accepts and unblocks a thread's sender", async () => {
     invoke.mockResolvedValue(null);
     await tauriMail.blockSender("7", false);

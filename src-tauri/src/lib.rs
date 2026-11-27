@@ -245,6 +245,20 @@ async fn restore_thread(engine: State<'_, Engine>, id: String) -> Result<()> {
 }
 
 #[tauri::command]
+async fn restore_to_inbox(engine: State<'_, Engine>, id: String) -> Result<()> {
+    engine.restore_to_inbox(&id)
+}
+
+#[tauri::command]
+async fn trash_threads(
+    engine: State<'_, Engine>,
+    account: Option<String>,
+    limit: u32,
+) -> Result<Vec<moss_core::ThreadSummary>> {
+    engine.trash_threads(account.as_deref(), limit as usize)
+}
+
+#[tauri::command]
 async fn done_threads(
     engine: State<'_, Engine>,
     account: Option<String>,
@@ -1057,7 +1071,9 @@ pub fn with_commands<R: Runtime>(builder: tauri::Builder<R>) -> tauri::Builder<R
         mark_not_done,
         delete_thread,
         restore_thread,
+        restore_to_inbox,
         done_threads,
+        trash_threads,
         block_sender,
         accept_sender,
         unblock_sender,
@@ -1447,7 +1463,7 @@ mod tests {
             "backup_start", "storage", "clear_cache", "rebuild_index", "preload", "attachment_file",
             "summary_rules", "save_summary_rule", "remove_summary_rule", "automatic_summaries",
             "set_automatic_summaries", "discard_summary", "ai_summaries", "ai_summarize", "ask_moss",
-            "pick_recipient", "recipient_picks",
+            "pick_recipient", "recipient_picks", "trash_threads", "restore_to_inbox",
         ] {
             let error = invoke(&webview, command, json!({})).unwrap_err();
             assert!(error.as_str().is_some_and(|error| error.contains("state") && error.contains("engine")), "{command}: {error}");
@@ -1458,7 +1474,7 @@ mod tests {
     fn malformed_renderer_arguments_never_reach_account_or_mail_mutations() {
         let a=app();
         let accounts=a.call("accounts",json!({})).unwrap();
-        for command in ["add_password_account","check_resend_key","start_browser_sign_in","add_resend_account","discover","update_account","reorder_accounts","remove_account","add_address","update_address","remove_address","block_address","discover_addresses","set_address_signatures","thread","mark_done","mark_not_done","delete_thread","restore_thread","done_threads","block_sender","accept_sender","unblock_sender","forget_sender_rule","blocked_threads","save_draft","delete_draft","attach_files","discard_draft_file","draft_preview","send_after","schedule_send","reschedule_send","unschedule_send","cancel_send","mark_read","snooze","move_thread","wait_for_reply","correct","allow_images","save_signature","delete_signature","set_signature_choice","search","sync_progress","server_change_status","retry_server_change","discard_server_change","dismiss_interrupted_sends","ai_choose","ai_plan","ai_remove_model","ai_download_models","ai_stop_model","ai_ask"] {
+        for command in ["add_password_account","check_resend_key","start_browser_sign_in","add_resend_account","discover","update_account","reorder_accounts","remove_account","add_address","update_address","remove_address","block_address","discover_addresses","set_address_signatures","thread","mark_done","mark_not_done","delete_thread","restore_thread","restore_to_inbox","done_threads","trash_threads","block_sender","accept_sender","unblock_sender","forget_sender_rule","blocked_threads","save_draft","delete_draft","attach_files","discard_draft_file","draft_preview","send_after","schedule_send","reschedule_send","unschedule_send","cancel_send","mark_read","snooze","move_thread","wait_for_reply","correct","allow_images","save_signature","delete_signature","set_signature_choice","search","sync_progress","server_change_status","retry_server_change","discard_server_change","dismiss_interrupted_sends","ai_choose","ai_plan","ai_remove_model","ai_download_models","ai_stop_model","ai_ask"] {
             let error=a.call(command,json!({})).unwrap_err();
             assert!(error.as_str().is_some_and(|message|message.contains("invalid args")),"{command}: {error}");
         }
@@ -2234,6 +2250,7 @@ mod tests {
             a.call("done_threads", json!({"account": "gmail", "limit": 5})).unwrap(),
             json!([])
         );
+        assert_eq!(a.call("trash_threads", json!({"account": null, "limit": 200})).unwrap(), json!([]));
         assert_eq!(
             a.call("split_counts", json!({})).unwrap(),
             json!({"important": 0, "other": 0, "calendar": 0, "newsletters": 0, "receipts": 0})
@@ -2257,6 +2274,8 @@ mod tests {
         assert_eq!(a.kind("mark_not_done", json!({"id": "1"})), "unknownThread");
         assert_eq!(a.kind("delete_thread", json!({"id": "1"})), "unknownThread");
         assert_eq!(a.kind("restore_thread", json!({"id": "1"})), "unknownThread");
+        assert_eq!(a.kind("restore_to_inbox", json!({"id": "1"})), "unknownThread");
+        assert!(a.call("trash_threads", json!({"account": null})).is_err(), "limit is required");
         assert!(a.call("done_threads", json!({"account": null})).is_err(), "limit is required");
         assert_eq!(a.kind("snooze", json!({"id": "1", "until": 5})), "unknownThread");
         assert_eq!(a.kind("move_thread", json!({"id": "1", "to": "important"})), "unknownThread");

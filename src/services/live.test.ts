@@ -5,6 +5,7 @@ import type { Thread } from "../data/types";
 import { useDrafts } from "../state/drafts";
 import { useSignatures } from "../state/signatures";
 import { useStore } from "../state/store";
+import { useTrash } from "../state/trash";
 import { fakeMail } from "../test/fakeMail";
 import { draft, message, personal, resetStore, thread, work } from "../test/fixtures";
 import { useScheduled } from "../state/scheduled";
@@ -173,6 +174,18 @@ describe("engine events", () => {
     handleEvent({ type: "mailChanged", accountId: "work" });
     await vi.advanceTimersByTimeAsync(300);
     expect(s().blockedThreads.map((t) => t.id)).toEqual(["x"]);
+  });
+
+  it("new mail also reloads Trash while it is on screen", async () => {
+    vi.useFakeTimers();
+    const { backend } = fakeMail({ trashThreads: vi.fn(async () => [thread("x")]) });
+    handleEvent({ type: "mailChanged", accountId: "work" });
+    await vi.advanceTimersByTimeAsync(300);
+    expect(backend.trashThreads).not.toHaveBeenCalled();
+    useStore.setState({ view: "trash" });
+    handleEvent({ type: "mailChanged", accountId: "work" });
+    await vi.advanceTimersByTimeAsync(300);
+    expect(useTrash.getState().threads.map((t) => t.id)).toEqual(["x"]);
   });
 
   it("says at launch, and when the engine finds one later, that an email you sent didn't go", async () => {

@@ -9,9 +9,10 @@ import { threadDraft, useDrafts } from "./drafts";
 import { useQuickReply } from "./quickReply";
 import { openSendLater, useScheduled } from "./scheduled";
 import { accountFor, findThread, openThread, useStore, type View } from "./store";
+import { inTrash, moveTrashReading, restoreToInbox } from "./trash";
 
 /** Screens that handle their own keys (Esc, ⌘1–⌘6, ↑/↓…). Only ⌘K and ⌘J reach past them. */
-const ownKeys: View[] = ["add-account", "settings", "search", "done", "blocked", "drafts", "senders", "scheduled"];
+const ownKeys: View[] = ["add-account", "settings", "search", "done", "blocked", "drafts", "senders", "scheduled", "trash"];
 
 /** Screens without the Ask panel. In the composer ⌘J is Write with Moss. */
 const noAsk: View[] = ["compose", "settings", "add-account"];
@@ -159,6 +160,21 @@ export function useShortcuts() {
       // Single keys
 
       const handled = () => e.preventDefault();
+      // Reading deleted mail: ↑/↓ go through Trash, E puts it back, the rest of the email's
+      // actions wait until it is back in the inbox.
+      if (s.view === "thread" && inTrash(s.openThreadId)) {
+        if (key === "arrowdown" || key === "arrowup") {
+          handled();
+          moveTrashReading(key === "arrowdown" ? 1 : -1);
+          return;
+        }
+        if (key === "e") {
+          handled();
+          restoreToInbox();
+          return;
+        }
+        if (key === "backspace" || key === "delete" || key === "h" || key === "m") return;
+      }
       switch (key) {
         case "arrowdown":
           handled();

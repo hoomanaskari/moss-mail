@@ -8,6 +8,7 @@ import { useQuickReply } from "./quickReply";
 import { digitFroms, pressDigit } from "../test/keys";
 import { resetAskPanel, useAskPanel } from "./askPanel";
 import { useScheduled } from "./scheduled";
+import { openFromTrash, openTrash, useTrash } from "./trash";
 import { sendBeatMs, useStore } from "./store";
 import { useShortcuts } from "./useShortcuts";
 
@@ -45,6 +46,28 @@ afterEach(() => {
 });
 
 describe("single keys", () => {
+  it("reading deleted mail: ↑/↓ go through Trash, E puts it back in the inbox, ⌫ does nothing", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    useTrash.setState({ threads: [thread("x"), thread("y")] });
+    openTrash();
+    await user.keyboard("{ArrowDown}");
+    expect(s().view).toBe("trash");
+    openFromTrash("x");
+    await user.keyboard("{ArrowDown}{ArrowDown}");
+    expect(s().openThreadId).toBe("y");
+    await user.keyboard("{ArrowUp}{Backspace}{Delete}hm");
+    expect(s().openThreadId).toBe("x");
+    expect(s().remindingId ?? s().movingId).toBeUndefined();
+    // Any other key works as it does on any email: R replies.
+    await user.keyboard("r");
+    expect(s()).toMatchObject({ view: "compose", draft: { threadId: "x" } });
+    act(() => useStore.setState({ view: "thread" }));
+    expect(useTrash.getState().threads.map((t) => t.id)).toEqual(["x", "y"]);
+    await user.keyboard("e");
+    expect(s().threads.map((t) => t.id)).toEqual(["x", "a", "b"]);
+    expect(useTrash.getState().threads.map((t) => t.id)).toEqual(["y"]);
+  });
+
   it("↓ / ↑ move, Enter opens, e marks done", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     await user.keyboard("{ArrowDown}");

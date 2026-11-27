@@ -7,6 +7,8 @@ import { useScheduled } from "../state/scheduled";
 import { useSignatures } from "../state/signatures";
 import { useStartup } from "../state/startup";
 import { useStore } from "../state/store";
+import { useTrash } from "../state/trash";
+import { trashThreads as demoTrash } from "../data/demo";
 import { pristineUpdates, useUpdates } from "../state/updates";
 import { demoUpdates, setUpdates } from "../services/updates";
 import { installedMoss, useAppIdentity } from "../services/appIdentity";
@@ -109,6 +111,7 @@ export function resetStore(threads: Thread[], accounts: Account[] = [work, perso
   setUpdates(demoUpdates());
   useAppIdentity.setState(installedMoss, true);
   useStartup.setState({ failed: undefined, trying: false });
+  useTrash.setState({ threads: [], cursorId: undefined }, true);
   useStore.setState(
     { ...pristine, accounts, threads, doneThreads: [], blockedThreads: [], cursorId: threads[0]?.id, themeChoice: "system", theme: "dark", readingSize: "default" },
     true,
@@ -126,5 +129,6 @@ export function resetDemoStore() {
   setUpdates(demoUpdates());
   useAppIdentity.setState(installedMoss, true);
   useStartup.setState({ failed: undefined, trying: false });
+  useTrash.setState({ threads: demoTrash, cursorId: undefined }, true);
   useStore.setState({ ...pristine, themeChoice: "system", theme: "dark", readingSize: "default" }, true);
 }

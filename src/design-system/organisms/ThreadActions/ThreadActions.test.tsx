@@ -43,6 +43,16 @@ describe("ThreadActions", () => {
     expect(screen.queryByRole("button", { name: "DoneE" })).not.toBeInTheDocument();
   });
 
+  it("deleted mail offers only Back to inbox", async () => {
+    const onRestore = vi.fn();
+    const { user } = setup({ onRestore, onMove: vi.fn() });
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    const back = screen.getByRole("button", { name: "Back to inboxE" });
+    expect(back).toHaveAttribute("title", "Put it back in your inbox");
+    await user.click(back);
+    expect(onRestore).toHaveBeenCalledOnce();
+  });
+
   it("leaves out Delete when the email can't be deleted", () => {
     setup({ onDelete: undefined });
     expect(screen.queryByRole("button", { name: /Delete/ })).not.toBeInTheDocument();
