@@ -17,6 +17,7 @@
 }
 
 .name {
+  flex-shrink: 0;
   color: var(--ink);
   font-size: calc(16px * var(--reading-scale));
   font-weight: 700;
@@ -33,14 +34,25 @@
   background: var(--raise);
 }
 
+/* Gives way first on a narrow column: the names end in an ellipsis, the chevron stays in view. */
 .toggle {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
   padding: 4px 8px;
   border-radius: 6px;
   color: var(--ink-2);
   font-size: calc(14px * var(--reading-scale));
+}
+
+.toggle > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toggle > svg {
+  flex-shrink: 0;
 }
 
 .toggle:hover,
@@ -53,6 +65,7 @@
 }
 
 .when {
+  flex-shrink: 0;
   color: var(--ink-3);
   font-size: calc(14px * var(--reading-scale));
 }

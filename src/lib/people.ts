@@ -25,11 +25,23 @@ export function personFromAddress(text: string): Person | undefined {
   return { name, email, initials: initialsOf(name) };
 }
 
-/** "to you, Lena · cc Jonas, Ines" */
+/** How many people each part of the summary names before it counts the rest. */
+const NAMED = 3;
+
+/**
+ * "to you, Lena · cc Jonas, Ines". A long part names three people, you first, and counts the
+ * rest ("to you, Lena, Jonas and 37 others"); the full list is one click away.
+ */
 export function recipientSummary(to: Person[], cc: Person[], myAddress: string): string {
   const name = (p: Person) => (p.email === myAddress ? "you" : (p.short ?? p.name));
-  const parts = [`to ${to.map(name).join(", ")}`];
-  if (cc.length) parts.push(`cc ${cc.map(name).join(", ")}`);
+  const part = (label: string, people: Person[]) => {
+    const names = [...people].sort((a, b) => Number(b.email === myAddress) - Number(a.email === myAddress)).map(name);
+    if (names.length <= NAMED) return `${label} ${names.join(", ")}`;
+    const rest = names.length - NAMED;
+    return `${label} ${names.slice(0, NAMED).join(", ")} and ${rest} ${rest === 1 ? "other" : "others"}`;
+  };
+  const parts = [part("to", to)];
+  if (cc.length) parts.push(part("cc", cc));
   return parts.join(SEP);
 }
 

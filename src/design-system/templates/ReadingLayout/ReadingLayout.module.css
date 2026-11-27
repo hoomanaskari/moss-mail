@@ -10,6 +10,8 @@
   min-width: 0;
   padding: 40px 32px 0;
   overflow-y: auto;
+  /* The reading column never scrolls sideways: whatever is too wide gives way inside it. */
+  overflow-x: hidden;
 }
 
 /* 740px of text; 350px sides at the design's 1440px window. */
@@ -24,6 +26,12 @@
   /* Grows with a long email instead of stretching to the window, so the space under the reply bar stays below it. */
   align-self: flex-start;
   padding-bottom: 28px;
+}
+
+/* Nothing in the column may grow it past its width; long lines shrink, wrap or end in an ellipsis. */
+.column > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .compact {

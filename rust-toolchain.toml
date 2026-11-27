@@ -1,0 +1,6 @@
+# Pinned: Rust 1.100 measures coverage differently (the same tests read about 2.5 points lower),
+# which would fail the floor in `pnpm check` without any code change. Move up deliberately,
+# re-measuring the floor with the new compiler.
+[toolchain]
+channel = "1.99.0"
+components = ["llvm-tools-preview", "clippy", "rustfmt"]

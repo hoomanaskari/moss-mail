@@ -49,6 +49,18 @@ describe("recipientSummary", () => {
   it("adds a cc part only when there is someone on cc", () => {
     expect(recipientSummary([lena], [jonas], maya.email)).toBe(`to Lena${SEP}cc Jonas`);
   });
+
+  const crowd = (n: number) => Array.from({ length: n }, (_, i) => person(`P${i + 1}`, `p${i + 1}@x.io`));
+
+  it("names three people at most in each part and counts the rest", () => {
+    expect(recipientSummary(crowd(5), [], maya.email)).toBe("to P1, P2, P3 and 2 others");
+    expect(recipientSummary(crowd(4), [], maya.email)).toBe("to P1, P2, P3 and 1 other");
+    expect(recipientSummary([lena], crowd(6), maya.email)).toBe(`to Lena${SEP}cc P1, P2, P3 and 3 others`);
+  });
+
+  it("names you first in a long list, so you can see you are on it", () => {
+    expect(recipientSummary([...crowd(4), maya], [], maya.email)).toBe("to you, P1, P2 and 2 others");
+  });
 });
 
 describe("personFromAddress", () => {

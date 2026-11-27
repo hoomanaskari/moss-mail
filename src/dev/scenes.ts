@@ -170,6 +170,22 @@ const mailScenes: Record<string, Scene> = {
       useStore.setState({ recipientsOpen: true });
     },
   },
+  /** Forty people on one email: the line under the sender names a few and counts the rest, inside the column. */
+  "conversation-many-recipients": {
+    shows: /and 37 others/,
+    apply: () => {
+      const crowd: Person[] = Array.from({ length: 40 }, (_, i) => {
+        const name = `Bartholomew Featherstonehaugh ${i + 1}`;
+        return { name, email: `bartholomew.featherstonehaugh${i + 1}@example.com`, initials: "BF" };
+      });
+      useStore.setState((s) => ({
+        threads: s.threads.map((t) =>
+          t.id === "q4-budget" ? { ...t, messages: t.messages.map((m) => ({ ...m, to: crowd, cc: [] })) } : t,
+        ),
+      }));
+      useStore.getState().open("q4-budget");
+    },
+  },
   "thread-forwarded": {
     shows: /You forwarded this/,
     apply: () => {
